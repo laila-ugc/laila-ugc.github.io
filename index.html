@@ -81,6 +81,9 @@ dialog::backdrop{background:rgba(30,24,40,.88)}
 .cap{position:fixed;top:calc(env(safe-area-inset-top,0px) + 1.4rem);left:1rem;right:8rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (prefers-reduced-motion:reduce){.thumb video{transition:none}}
 
+.redes{display:flex;flex-wrap:wrap;gap:.5rem;margin:-.4rem 0 1.5rem}
+.redes a{display:inline-flex;align-items:center;min-height:40px;padding:0 1rem;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--ink);text-decoration:none;font-weight:600;font-size:.92rem}
+.redes a:hover{border-color:var(--ink)}
 .loading{padding:30vh 0;text-align:center;color:var(--soft)}
 </style>
 </head>
@@ -95,6 +98,7 @@ dialog::backdrop{background:rgba(30,24,40,.88)}
     <div class="txt">
       <h1 class="disp" id="frase"></h1>
       <p id="intro"></p>
+      <div class="redes" id="redes" hidden></div>
       <button class="btn" id="herobtn">Ver videos</button>
     </div>
     <div class="reel" id="reel" aria-hidden="true"></div>
@@ -223,6 +227,11 @@ function contacto() {
     L.append(a);
   });
   $("#foot").hidden = !lista.length;
+  const R = $("#redes"); R.replaceChildren();
+  lista.filter(c => ["instagram", "tiktok", "facebook", "linkedin", "youtube", "web"].includes(c.k)).forEach(c => {
+    const a = el("a", null, c.k === "web" ? "Web" : c.t); a.href = c.href; a.target = "_blank"; a.rel = "noopener"; R.append(a);
+  });
+  R.hidden = !R.children.length;
   const t = $("#topcta");
   if (lista.length) { t.href = lista[0].href; if (!/^(tel|mailto):/.test(lista[0].href)) { t.target = "_blank"; t.rel = "noopener"; } t.hidden = false; }
 }

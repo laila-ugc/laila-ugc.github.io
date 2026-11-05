@@ -53,6 +53,10 @@ details.grp[open]>summary .chev{transform:rotate(90deg)}
 .vrow .t b{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .vrow .t span{font-size:13px;color:var(--soft)}
 .vrow .acts{display:flex;gap:4px;flex:0 0 auto}
+.vrow .ck{width:24px;height:24px;flex:0 0 auto;accent-color:var(--accent)}
+body.sel .vrow{cursor:pointer}
+body.sel .toast{bottom:calc(240px + env(safe-area-inset-bottom,0px))}
+body.sel{padding-bottom:calc(230px + env(safe-area-inset-bottom,0px))}
 .star{font-size:12px;font-weight:700;color:var(--accent)}
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
 nav.tabs .in{max-width:40rem;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
@@ -105,6 +109,14 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
     <header class="bar"><h1 id="titulo">Videos</h1><span class="estado" id="estado"></span></header>
 
     <section id="tVideos">
+      <details class="grp" id="tanda" style="margin-bottom:10px">
+        <summary><span>Rubro y marca de esta tanda</span><span class="n" id="tandaRes">Opcional</span><span class="chev">›</span></summary>
+        <div class="stack" style="padding:0 16px 16px">
+          <label class="f">Rubro<select id="tCat"></select></label>
+          <label class="f">Marca<input type="text" id="tMarca" list="marcas" placeholder="Ej: Soyana"></label>
+          <p class="hint" style="margin:0">Los videos que subas ahora entran con este rubro y esta marca. Después podés cambiarlos con “Editar”.</p>
+        </div>
+      </details>
       <label class="btn full" for="fVideos" style="cursor:pointer">
         <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         Agregar videos
@@ -112,7 +124,21 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
       <input type="file" id="fVideos" accept="video/*" multiple hidden>
       <p class="hint" style="text-align:center;margin:8px 0 0">Podés elegir varios a la vez. Máximo 100 MB cada uno.</p>
       <div class="card queue sec" id="queue" hidden></div>
-      <div class="stack sec" id="listaVideos"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:16px"><button class="mini" id="selModo">Seleccionar varios</button></div>
+      <div class="stack" id="listaVideos" style="margin-top:10px"></div>
+      <div id="selBar" hidden style="position:fixed;left:0;right:0;bottom:calc(60px + env(safe-area-inset-bottom,0px));z-index:19;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(0,0,0,.06)">
+        <div class="wrap stack" style="padding-top:12px;padding-bottom:12px;gap:8px">
+          <b id="selN">0 seleccionados</b>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <select id="selCat" aria-label="Rubro"></select>
+            <input type="text" id="selMarca" list="marcas" placeholder="Marca (opcional)" aria-label="Marca">
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn" id="selAplicar" style="flex:1 1 auto">Aplicar</button>
+            <button class="btn danger" id="selQuitar">Quitar</button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <section id="tRubros" hidden>
@@ -161,7 +187,18 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
     </section>
 
     <section id="tFlyer" hidden>
-      <div class="stack">
+      <div class="seg" id="flModo" style="margin-bottom:16px"><button data-v="portfolio" aria-pressed="true">Portfolio</button><button data-v="precios" aria-pressed="false">Precios</button></div>
+      <div class="stack" id="flPrecios" hidden>
+        <p class="hint" style="margin:0">Los precios no se muestran en la página: solo aparecen en este flyer.</p>
+        <label class="f">Título<input type="text" id="pkTitulo"></label>
+        <div class="stack" id="pkLista"></div>
+        <button class="btn soft full" id="pkAgregar">Agregar pack</button>
+        <label class="f">Nota al pie<input type="text" id="pkNota" placeholder="Ej: Precios en pesos, válidos hasta el 30/11"></label>
+        <div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Formato<div class="seg" id="pkFormato"><button data-v="historia" aria-pressed="true">Historia</button><button data-v="post" aria-pressed="false">Posteo</button></div></div>
+        <div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Fondo<div class="sw" id="pkFondo"></div></div>
+        <button class="btn full" id="pkGenerar">Generar flyer de precios</button>
+      </div>
+      <div class="stack" id="flPortfolio">
         <label class="f">Frase<input type="text" id="flFrase"></label>
         <label class="f">Rubro<select id="flRubro"></select></label>
         <div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Elegí 3 videos<div class="pick" id="flPick"></div></div>
@@ -169,6 +206,8 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
         <div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Formato<div class="seg" id="flFormato"><button data-v="historia" aria-pressed="true">Historia</button><button data-v="post" aria-pressed="false">Posteo</button></div></div>
         <div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Fondo<div class="sw" id="flFondo"></div></div>
         <button class="btn full" id="flGenerar">Generar flyer</button>
+      </div>
+      <div class="stack sec">
         <div id="flRes" class="stack" hidden>
           <img id="prev" alt="Vista previa del flyer">
           <button class="btn full" id="flCompartir">Compartir</button>
@@ -222,11 +261,16 @@ const app = initializeApp(FIREBASE);
 const auth = A.getAuth(app);
 const db = F.getFirestore(app);
 const REF = F.doc(db, "publico", "sitio");
+const REF_PK = F.doc(db, "privado", "packs");
 const SITIO = new URL("./", location.href).href;
 
 const $ = s => document.querySelector(s);
 const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.className = c; if (txt != null) e.textContent = txt; return e; };
-let S = null;
+let S = null, PK = null;
+const PK_INICIAL = { titulo: "Packs de contenido", nota: "", packs: [
+  { piezas: "4 videos", precio: "$160.000", incluye: "Idea y guion\nFilmación\nEdición\nUna ronda de cambios", noIncluye: "Pauta en redes", dest: false },
+  { piezas: "8 videos", precio: "$280.000", incluye: "Idea y guion\nFilmación\nEdición\nUna ronda de cambios", noIncluye: "Pauta en redes", dest: true }
+] };
 
 // ---------- utilidades ----------
 function toast(t) { const x = $("#toast"); x.textContent = t; x.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => x.hidden = true, 2200); }
@@ -265,9 +309,11 @@ A.onAuthStateChanged(auth, async u => {
     if (snap.exists()) S = { ...structuredClone(INICIAL), ...snap.data() };
     else { S = structuredClone(INICIAL); await F.setDoc(REF, S); }
     S.contacto = { ...INICIAL.contacto, ...(S.contacto || {}) };
+    try { const ps = await F.getDoc(REF_PK); PK = ps.exists() ? { ...structuredClone(PK_INICIAL), ...ps.data() } : structuredClone(PK_INICIAL); }
+    catch { PK = structuredClone(PK_INICIAL); }
   } catch (e) {
     console.error(e); toast("No se pudo cargar. Revisá la conexión.");
-    S = S || structuredClone(INICIAL);
+    S = S || structuredClone(INICIAL); PK = PK || structuredClone(PK_INICIAL);
   }
   $("#vApp").hidden = false;
   pintarTodo();
@@ -291,6 +337,7 @@ document.querySelectorAll("nav.tabs button").forEach(b => b.onclick = () => {
   ["Videos", "Rubros", "Pagina", "Contacto", "Flyer"].forEach(t => $("#t" + t).hidden = t !== b.dataset.t);
   $("#titulo").textContent = b.textContent.trim();
   if (b.dataset.t === "Flyer") pintarFlyer();
+  if (b.dataset.t !== "Videos" && modoSel) { modoSel = false; sel.clear(); $("#selModo").textContent = "Seleccionar varios"; pintarVideos(); }
   window.scrollTo(0, 0);
 });
 
@@ -301,6 +348,7 @@ function pintarTodo() {
 
 // ---------- videos ----------
 const abiertos = new Set(["__primero"]);
+let modoSel = false; const sel = new Set();
 function pintarVideos() {
   const L = $("#listaVideos"); L.replaceChildren();
   const grupos = S.categorias.map(c => ({ c, v: S.videos.filter(v => v.cat === c.id) }));
@@ -313,7 +361,13 @@ function pintarVideos() {
     d.ontoggle = () => { abiertos.delete("__primero"); d.open ? abiertos.add(g.c.id) : abiertos.delete(g.c.id); };
     const s = el("summary"); const dot = el("span", "dot"); dot.style.background = TONOS[g.c.tono] || "#eee";
     s.append(dot, el("span", null, g.c.nombre), el("span", "n", String(g.v.length)));
-    const ch = el("span", "chev", "›"); s.append(ch); d.append(s);
+    if (modoSel && g.v.length) {
+      const todos = g.v.every(v => sel.has(v.id));
+      const tb = el("button", "mini", todos ? "Ninguno" : "Todos"); tb.style.marginLeft = "auto";
+      tb.onclick = e => { e.preventDefault(); g.v.forEach(v => todos ? sel.delete(v.id) : sel.add(v.id)); abiertos.add(g.c.id); pintarVideos(); };
+      s.append(tb);
+    }
+    const ch = el("span", "chev", "›"); if (modoSel && g.v.length) ch.style.marginLeft = "8px"; s.append(ch); d.append(s);
     g.v.forEach((v, i) => {
       const r = el("div", "vrow");
       const im = el("img"); im.src = posterSrc(v); im.alt = ""; im.loading = "lazy";
@@ -323,14 +377,51 @@ function pintarVideos() {
       const up = el("button", "mini", "↑"); up.setAttribute("aria-label", "Subir"); up.disabled = i === 0; up.onclick = () => mover(v, g.v, -1);
       const dn = el("button", "mini", "↓"); dn.setAttribute("aria-label", "Bajar"); dn.disabled = i === g.v.length - 1; dn.onclick = () => mover(v, g.v, 1);
       const ed = el("button", "mini", "Editar"); ed.onclick = () => editar(v);
-      a.append(up, dn, ed); r.append(im, t, a); d.append(r);
+      if (modoSel) {
+        const ck = el("input", "ck"); ck.type = "checkbox"; ck.checked = sel.has(v.id); ck.setAttribute("aria-label", "Seleccionar " + (v.titulo || "video"));
+        const tog = () => { sel.has(v.id) ? sel.delete(v.id) : sel.add(v.id); abiertos.add(g.c.id); pintarVideos(); };
+        ck.onclick = e => { e.stopPropagation(); tog(); };
+        r.onclick = tog; r.append(ck, im, t);
+      } else { a.append(up, dn, ed); r.append(im, t, a); }
+      d.append(r);
     });
     if (!g.v.length) { const p = el("div", "vrow"); p.append(el("span", "hint", "Sin videos en este rubro.")); d.append(p); }
     L.append(d);
   });
+  const tc = $("#tCat"), prevT = tc.value; tc.replaceChildren();
+  const t0 = el("option", null, "Elegir después"); t0.value = ""; tc.append(t0);
+  S.categorias.forEach(c => { const o = el("option", null, c.nombre); o.value = c.id; tc.append(o); });
+  tc.value = catDe(prevT) ? prevT : "";
+  const resumen = () => { const c = catDe(tc.value); const m = $("#tMarca").value.trim(); $("#tandaRes").textContent = c || m ? [c && c.nombre, m].filter(Boolean).join(", ") : "Opcional"; };
+  tc.onchange = resumen; $("#tMarca").oninput = resumen; resumen();
+  barraSel();
   const dl = $("#marcas"); dl.replaceChildren();
   [...new Set(S.videos.map(v => v.marca).filter(Boolean))].forEach(m => { const o = el("option"); o.value = m; dl.append(o); });
 }
+function barraSel() {
+  [...sel].forEach(id => { if (!S.videos.some(v => v.id === id)) sel.delete(id); });
+  $("#selBar").hidden = !modoSel; document.body.classList.toggle("sel", modoSel);
+  $("#selN").textContent = sel.size + (sel.size === 1 ? " seleccionado" : " seleccionados");
+  $("#selAplicar").disabled = $("#selQuitar").disabled = !sel.size;
+  const sc = $("#selCat"), pv = sc.value; sc.replaceChildren();
+  const o0 = el("option", null, "Mover a rubro…"); o0.value = ""; sc.append(o0);
+  S.categorias.forEach(c => { const o = el("option", null, c.nombre); o.value = c.id; sc.append(o); });
+  sc.value = catDe(pv) ? pv : "";
+}
+$("#selModo").onclick = () => { modoSel = !modoSel; sel.clear(); $("#selModo").textContent = modoSel ? "Listo" : "Seleccionar varios"; pintarVideos(); };
+$("#selAplicar").onclick = () => {
+  const cat = $("#selCat").value, marca = $("#selMarca").value.trim();
+  if (!cat && !marca) { toast("Elegí un rubro o escribí una marca"); return; }
+  const n = sel.size;
+  S.videos.forEach(v => { if (sel.has(v.id)) { if (cat) v.cat = cat; if (marca) v.marca = marca; } });
+  if (cat) abiertos.add(cat);
+  sel.clear(); $("#selMarca").value = ""; pintarVideos(); guardar(true);
+  toast(n + (n === 1 ? " video actualizado" : " videos actualizados"));
+};
+$("#selQuitar").onclick = () => {
+  const n = sel.size; if (!n || !confirm("¿Quitar " + n + (n === 1 ? " video" : " videos") + " del portfolio?")) return;
+  S.videos = S.videos.filter(v => !sel.has(v.id)); sel.clear(); pintarVideos(); guardar(true); toast("Videos quitados");
+};
 function mover(v, grupo, dir) {
   const j = grupo.indexOf(v) + dir; if (j < 0 || j >= grupo.length) return;
   const otro = grupo[j]; const a = S.videos.indexOf(v), b = S.videos.indexOf(otro);
@@ -350,9 +441,11 @@ $("#fVideos").onchange = async e => {
       const res = await subir(r.f, p => r.i.style.width = Math.round(p * 100) + "%");
       const base = r.f.name.replace(/\.[^.]+$/, "").toLowerCase();
       const k = CONOCIDOS[base];
-      S.videos.push({ id: uid(), url: res.secure_url, h: res.width > res.height, titulo: k ? k[2] : r.f.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim(), marca: k ? k[1] : "", cat: k ? k[0] : "", destacado: false, portada: "" });
+      const tCat = catDe($("#tCat").value) ? $("#tCat").value : "", tMarca = $("#tMarca").value.trim();
+      const cat = tCat || (k ? k[0] : ""), marca = tMarca || (k ? k[1] : "");
+      S.videos.push({ id: uid(), url: res.secure_url, h: res.width > res.height, titulo: k ? k[2] : r.f.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim(), marca, cat, destacado: false, portada: "" });
       r.i.style.width = "100%"; r.st.textContent = "Listo"; r.st.className = "ok";
-      if (k) abiertos.add(k[0]); else abiertos.add("__sin");
+      abiertos.add(cat || "__sin");
       pintarVideos(); guardar(true);
     } catch (x) { r.st.textContent = x.message || "Error"; r.st.className = "err"; }
   }
@@ -563,14 +656,142 @@ $("#flGenerar").onclick = async () => {
       });
       pie(H - 220 - 56);
     }
-    const url = c.toDataURL("image/png");
-    $("#prev").src = url; $("#flBajar").href = url; $("#flRes").hidden = false;
-    c.toBlob(b => { flBlob = b; });
-    $("#flRes").scrollIntoView({ behavior: "smooth" });
+    mostrarFlyer(c);
   } catch (e) { console.error(e); err.textContent = "No se pudo generar. Revisá la conexión y probá de nuevo."; err.hidden = false; }
   $("#flGenerar").disabled = false; $("#flGenerar").textContent = "Generar flyer";
 };
 let flBlob = null;
+function mostrarFlyer(c) {
+  const url = c.toDataURL("image/png");
+  $("#prev").src = url; $("#flBajar").href = url; $("#flRes").hidden = false;
+  c.toBlob(b => { flBlob = b; });
+  $("#flRes").scrollIntoView({ behavior: "smooth" });
+}
+
+// ---------- flyer de precios ----------
+let pkFormato = "historia", pkFondo = "lila", pkT = null;
+function guardarPK() {
+  estado("Guardando…"); clearTimeout(pkT);
+  pkT = setTimeout(async () => { try { await F.setDoc(REF_PK, JSON.parse(JSON.stringify(PK))); estado("Guardado"); } catch (e) { console.error(e); estado("No se guardó"); toast("No se pudieron guardar los precios"); } }, 700);
+}
+$("#flModo").querySelectorAll("button").forEach(b => b.onclick = () => {
+  $("#flModo").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", "false")); b.setAttribute("aria-pressed", "true");
+  const pr = b.dataset.v === "precios"; $("#flPrecios").hidden = !pr; $("#flPortfolio").hidden = pr; $("#flRes").hidden = true;
+  if (pr) pintarPacks();
+});
+$("#pkFormato").querySelectorAll("button").forEach(b => b.onclick = () => {
+  $("#pkFormato").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", "false")); b.setAttribute("aria-pressed", "true"); pkFormato = b.dataset.v;
+});
+function pintarPacks() {
+  $("#pkTitulo").value = PK.titulo || ""; $("#pkTitulo").oninput = e => { PK.titulo = e.target.value; guardarPK(); };
+  $("#pkNota").value = PK.nota || ""; $("#pkNota").oninput = e => { PK.nota = e.target.value; guardarPK(); };
+  const L = $("#pkLista"); L.replaceChildren();
+  PK.packs.forEach((k, i) => {
+    const box = el("div", "card"); box.style.padding = "14px"; const st = el("div", "stack"); st.style.gap = "10px";
+    const fila = el("div"); fila.style.cssText = "display:grid;grid-template-columns:1fr 1fr;gap:8px";
+    const campo = (lab, key, ph, area) => { const l = el("label", "f", lab); const inp = el(area ? "textarea" : "input"); if (!area) inp.type = "text"; inp.placeholder = ph; inp.value = k[key] || ""; inp.oninput = () => { k[key] = inp.value; guardarPK(); }; l.append(inp); return l; };
+    fila.append(campo("Cantidad", "piezas", "Ej: 4 videos"), campo("Precio", "precio", "Ej: $160.000"));
+    st.append(fila, campo("Incluye (uno por renglón)", "incluye", "Idea y guion", true), campo("No incluye (uno por renglón)", "noIncluye", "Pauta en redes", true));
+    const acts = el("div"); acts.style.cssText = "display:flex;gap:8px;align-items:center;flex-wrap:wrap";
+    const dl = el("label"); dl.style.cssText = "display:flex;align-items:center;gap:8px;font-size:14px;min-height:40px";
+    const cb = el("input"); cb.type = "checkbox"; cb.checked = !!k.dest; cb.style.cssText = "width:20px;height:20px"; cb.onchange = () => { k.dest = cb.checked; guardarPK(); };
+    dl.append(cb, document.createTextNode("Marcar como “Más elegido”"));
+    const up = el("button", "mini", "↑"); up.disabled = i === 0; up.style.marginLeft = "auto"; up.onclick = () => { [PK.packs[i - 1], PK.packs[i]] = [PK.packs[i], PK.packs[i - 1]]; pintarPacks(); guardarPK(); };
+    const dn = el("button", "mini", "↓"); dn.disabled = i === PK.packs.length - 1; dn.onclick = () => { [PK.packs[i + 1], PK.packs[i]] = [PK.packs[i], PK.packs[i + 1]]; pintarPacks(); guardarPK(); };
+    const del = el("button", "mini", "Quitar"); del.style.color = "var(--danger)"; del.onclick = () => { if (confirm("¿Quitar este pack?")) { PK.packs.splice(i, 1); pintarPacks(); guardarPK(); } };
+    acts.append(dl, up, dn, del); st.append(acts); box.append(st); L.append(box);
+  });
+  $("#pkAgregar").disabled = PK.packs.length >= 4;
+  const f = $("#pkFondo"); f.replaceChildren();
+  [...Object.entries(TONOS), ["acento", ACENTOS[S.acento] || ACENTOS.violeta]].forEach(([key, col]) => { const b = el("button"); b.style.background = col; b.setAttribute("aria-label", key); b.setAttribute("aria-pressed", String(pkFondo === key)); b.onclick = () => { pkFondo = key; pintarPacks(); }; f.append(b); });
+}
+$("#pkAgregar").onclick = () => { if (PK.packs.length >= 4) return; PK.packs.push({ piezas: "", precio: "", incluye: "", noIncluye: "", dest: false }); pintarPacks(); guardarPK(); };
+
+$("#pkGenerar").onclick = async () => {
+  const err = $("#flErr"); err.hidden = true;
+  const packs = PK.packs.filter(k => (k.piezas || k.precio || "").trim());
+  if (!packs.length) { err.textContent = "Cargá al menos un pack con cantidad o precio."; err.hidden = false; return; }
+  const btn = $("#pkGenerar"); btn.disabled = true; btn.textContent = "Generando…";
+  try {
+    await Promise.all([document.fonts.load('600 100px "Fraunces"'), document.fonts.load('700 40px "Manrope"'), document.fonts.load('500 40px "Manrope"'), document.fonts.load('800 40px "Manrope"')]);
+    const W = 1080, H = pkFormato === "post" ? 1350 : 1920, M = 56;
+    const c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d");
+    const fondo = pkFondo === "acento" ? (ACENTOS[S.acento] || ACENTOS.violeta) : TONOS[pkFondo];
+    const tinta = lum(fondo) > 0.6 ? "#2B2533" : "#FFFFFF";
+    const acento = ACENTOS[S.acento] || ACENTOS.violeta;
+    x.fillStyle = fondo; x.fillRect(0, 0, W, H); x.textBaseline = "top";
+    // título
+    x.fillStyle = tinta; x.textAlign = "center"; x.font = '600 92px "Fraunces"';
+    const tl = lineas(x, PK.titulo || "Packs", W - 2 * M); tl.forEach((l, i) => x.fillText(l, W / 2, 80 + i * 100)); x.textAlign = "left";
+    const top = 80 + tl.length * 100 + 40;
+    const nota = (PK.nota || "").trim();
+    const pieH = 250, notaH = nota ? 60 : 0;
+    const disp = H - top - pieH - M - notaH - 24;
+    const items = t => String(t || "").split("\n").map(v => v.trim()).filter(Boolean);
+    // medir con escala 1 y ajustar
+    const col = pkFormato === "post" && packs.length > 1;
+    const medir = (k, sc, cw) => {
+      let h = 36 * sc + (col ? 140 : 72) * sc + 18 * sc; // padding + cantidad/precio + separación
+      const inc = items(k.incluye), no = items(k.noIncluye);
+      x.font = `500 ${34 * sc}px "Manrope"`;
+      const lh = 46 * sc;
+      const cuenta = arr => arr.reduce((a, t) => a + lineas(x, t, cw - 70 * sc).length, 0);
+      if (inc.length) h += 40 * sc + cuenta(inc) * lh;
+      if (no.length) h += 16 * sc + 40 * sc + cuenta(no) * lh;
+      return h + 36 * sc;
+    };
+    const gap = col ? 20 : 26, cw = col ? (W - 2 * M - gap * (packs.length - 1)) / packs.length : W - 2 * M;
+    let sc = col ? 0.8 : 1;
+    const total = sc => col ? Math.max(...packs.map(k => medir(k, sc, cw))) : packs.reduce((a, k) => a + medir(k, sc, cw), 0) + gap * (packs.length - 1);
+    for (let t = 0; t < 14; t++) { if (total(sc) <= disp) break; sc *= 0.93; }
+    const hCol = col ? total(sc) : 0;
+    let y = col ? top + Math.max(0, (disp - hCol) / 2) : top, xc = M;
+    packs.forEach(k => {
+      const h = col ? hCol : medir(k, sc, cw);
+      const M0 = xc;
+      x.save(); x.shadowColor = "rgba(0,0,0,.08)"; x.shadowBlur = 30; x.shadowOffsetY = 10;
+      x.fillStyle = "#FFFFFF"; redondo(x, M0, y, cw, h, 36 * sc); x.fill(); x.restore();
+      if (k.dest) { x.strokeStyle = acento; x.lineWidth = 6; redondo(x, M0 + 3, y + 3, cw - 6, h - 6, 34 * sc); x.stroke();
+        x.font = `700 ${26 * sc}px "Manrope"`; const tw = x.measureText("Más elegido").width + 36 * sc;
+        x.fillStyle = acento; redondo(x, M0 + cw - tw - 28 * sc, y - 20 * sc, tw, 46 * sc, 23 * sc); x.fill();
+        x.fillStyle = "#FFFFFF"; x.fillText("Más elegido", M0 + cw - tw - 28 * sc + 18 * sc, y - 20 * sc + 10 * sc); }
+      let yy = y + 36 * sc; const px = M0 + 40 * sc;
+      if (col) {
+        x.fillStyle = "#2B2533"; x.font = `600 ${64 * sc}px "Fraunces"`; x.fillText(k.piezas || "", px, yy, cw - 80 * sc);
+        x.fillStyle = acento; x.font = `800 ${56 * sc}px "Manrope"`; x.fillText(k.precio || "", px, yy + 76 * sc, cw - 80 * sc);
+        yy += 140 * sc + 18 * sc;
+      } else {
+        x.fillStyle = "#2B2533"; x.font = `600 ${64 * sc}px "Fraunces"`; x.fillText(k.piezas || "", px, yy, cw * 0.55);
+        x.fillStyle = acento; x.font = `800 ${60 * sc}px "Manrope"`; x.textAlign = "right"; x.fillText(k.precio || "", M0 + cw - 40 * sc, yy + 4 * sc, cw * 0.42); x.textAlign = "left";
+        yy += 72 * sc + 18 * sc;
+      }
+      const lista = (titulo, arr, ok) => {
+        if (!arr.length) return;
+        x.fillStyle = "#6B6375"; x.font = `700 ${26 * sc}px "Manrope"`; x.fillText(titulo, px, yy); yy += 40 * sc;
+        arr.forEach(t => {
+          x.font = `800 ${32 * sc}px "Manrope"`; x.fillStyle = ok ? acento : "#9A92A4"; x.fillText(ok ? "✓" : "✕", px, yy);
+          x.font = `500 ${34 * sc}px "Manrope"`; x.fillStyle = ok ? "#2B2533" : "#6B6375";
+          lineas(x, t, cw - 70 * sc).forEach(l => { x.fillText(l, px + 44 * sc, yy); yy += 46 * sc; });
+        });
+      };
+      lista("INCLUYE", items(k.incluye), true);
+      if (items(k.noIncluye).length) yy += 16 * sc;
+      lista("NO INCLUYE", items(k.noIncluye), false);
+      if (col) xc += cw + gap; else y += h + gap;
+    });
+    if (nota) { x.fillStyle = tinta; x.font = '500 30px "Manrope"'; x.textAlign = "center"; x.fillText(nota, W / 2, H - pieH - M - notaH + 8, W - 2 * M); x.textAlign = "left"; }
+    // pie con nombre, contactos y QR
+    const yp = H - pieH - M, FW = W - 2 * M;
+    x.fillStyle = "#FFFFFF"; redondo(x, M, yp, FW, pieH, 36); x.fill();
+    const q = qr(SITIO, 190); x.drawImage(q, M + FW - 30 - 190, yp + 30, 190, 190);
+    x.fillStyle = "#2B2533"; x.font = '600 60px "Fraunces"'; x.fillText(S.nombre || "", M + 40, yp + 28, FW - 300);
+    const cs = linksContacto(S.contacto).slice(0, 4);
+    cs.forEach((ct, i) => { x.font = `${i ? 500 : 700} 30px "Manrope"`; x.fillStyle = i ? "#2B2533" : acento; x.fillText(ct.t + ": " + ct.valor, M + 40, yp + 104 + i * 36, FW - 300); });
+    if (!cs.length) { x.font = '500 30px "Manrope"'; x.fillStyle = "#6B6375"; x.fillText(S.rol || "", M + 40, yp + 104); }
+    mostrarFlyer(c);
+  } catch (e) { console.error(e); err.textContent = "No se pudo generar el flyer."; err.hidden = false; }
+  btn.disabled = false; btn.textContent = "Generar flyer de precios";
+};
 $("#flCompartir").onclick = async () => {
   if (!flBlob) return;
   const file = new File([flBlob], "flyer.png", { type: "image/png" });
