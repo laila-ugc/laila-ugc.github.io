@@ -21,6 +21,7 @@
 *,*::before,*::after{box-sizing:inherit}
 [hidden]{display:none!important}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{overflow-x:hidden}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.55 "Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
 .disp{font-family:"Fraunces",Georgia,"Times New Roman",serif;font-weight:600;font-variation-settings:"SOFT" 100,"WONK" 0;letter-spacing:-.02em}
 .wrap{max-width:76rem;margin:0 auto;padding:0 clamp(1.25rem,4vw,3rem)}
@@ -31,28 +32,30 @@ body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.55 "Manrope"
 .me span{font-size:.85rem;color:var(--soft)}
 .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 1.4rem;border-radius:999px;background:var(--accent);color:var(--onaccent);font-weight:700;text-decoration:none;border:0;font-size:1rem;cursor:pointer;font-family:inherit}
 .btn.soft{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
-.hero{padding:clamp(1.5rem,5vw,3.5rem) 0 clamp(2.5rem,6vw,4rem)}
-.hero .in{display:flex;flex-wrap:wrap;align-items:center;gap:2.5rem 3rem}
+.hero{padding:clamp(1rem,4vw,3rem) 0 clamp(1.5rem,4vw,3rem)}
+.hero .in{display:flex;flex-wrap:wrap;align-items:center;gap:1.75rem 3rem}
 .hero .txt{flex:1 1 24rem;min-width:0}
-.hero h1{margin:0;font-size:clamp(2.8rem,7.5vw,5.6rem);line-height:1;max-width:12ch}
+.hero h1{margin:0;font-size:clamp(2.2rem,8.5vw,4.8rem);line-height:1.02;max-width:13ch}
 .hero p{margin:1.1rem 0 1.6rem;font-size:clamp(1.05rem,2vw,1.2rem);max-width:30rem;color:var(--soft)}
-.reel{flex:1 1 22rem;display:flex;justify-content:center;align-items:flex-end;gap:clamp(.6rem,1.5vw,1rem);min-width:0}
-.reel .ph{position:relative;width:clamp(6.5rem,14vw,12.5rem);aspect-ratio:9/16;border-radius:26px;padding:7px;background:var(--butter)}
-.reel .ph:nth-child(2){width:clamp(8rem,18vw,15.5rem);background:var(--lilac)}
+.reel{flex:1 1 20rem;width:100%;max-width:34rem;display:flex;justify-content:center;align-items:flex-end;gap:clamp(.5rem,1.5vw,1rem);min-width:0}
+.reel .ph{position:relative;flex:1 1 0;min-width:0;max-width:10.5rem;aspect-ratio:9/16;border-radius:22px;padding:6px;background:var(--butter)}
+.reel .ph:nth-child(2){flex-grow:1.25;max-width:13rem;background:var(--lilac)}
 .reel .ph:nth-child(3){background:var(--mint)}
-.reel .ph.h{aspect-ratio:16/9;width:clamp(16rem,34vw,26rem)}
-.reel .ph .clip{position:absolute;inset:7px;border-radius:20px;overflow:hidden;background:#000}
+.reel .ph.h{aspect-ratio:16/9;flex:1 1 100%;max-width:26rem}
+.reel .ph .clip{position:absolute;inset:6px;border-radius:17px;overflow:hidden;background:#000}
 .reel video,.reel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-nav.cats{position:sticky;top:env(safe-area-inset-top,0px);z-index:4;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px)}
-body.has-nav::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
-nav.cats .wrap{display:flex;gap:.5rem;overflow-x:auto;padding-top:.75rem;padding-bottom:.75rem;scrollbar-width:none}
-nav.cats button{flex:0 0 auto;font:inherit;font-weight:600;min-height:44px;padding:0 1.15rem;border-radius:999px;border:0;color:var(--ink);cursor:pointer}
-nav.cats button:hover{box-shadow:inset 0 0 0 2px var(--ink)}
-section.cat{padding:2.75rem 0 .5rem;scroll-margin-top:4.5rem}
-section.cat .head{display:flex;align-items:center;gap:.75rem;margin:0 0 1.75rem}
-section.cat h2{margin:0;font-size:clamp(2rem,5vw,3.2rem);line-height:1}
-section.cat .dot{width:.9rem;height:.9rem;border-radius:50%;flex:0 0 auto}
-.brandrow{margin-bottom:2.5rem}
+.cats{display:flex;flex-direction:column;gap:.75rem;padding:.5rem 0 1rem}
+details.cat{scroll-margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:22px;overflow:hidden}
+details.cat>summary{list-style:none;display:flex;align-items:center;gap:.8rem;min-height:64px;padding:.75rem 1.25rem;cursor:pointer}
+details.cat>summary::-webkit-details-marker{display:none}
+details.cat>summary .dot{width:2.2rem;height:2.2rem;border-radius:50%;flex:0 0 auto}
+details.cat>summary h2{margin:0;font-size:clamp(1.25rem,4.5vw,1.7rem);line-height:1.1;flex:1 1 auto;min-width:0}
+details.cat>summary .n{font-size:.9rem;color:var(--soft);font-weight:600;flex:0 0 auto}
+details.cat>summary .chev{width:1.1rem;height:1.1rem;flex:0 0 auto;transition:transform .2s;stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round}
+details.cat[open]>summary .chev{transform:rotate(180deg)}
+details.cat .body{padding:.25rem 1.25rem 1.25rem}
+@media (prefers-reduced-motion:reduce){details.cat>summary .chev{transition:none}}
+.brandrow{margin-bottom:1.5rem}.brandrow:last-child{margin-bottom:0}
 .brandrow h3{margin:0 0 .9rem;font-size:.9rem;font-weight:700;color:var(--soft)}
 .row{display:flex;align-items:flex-start;gap:1rem;overflow-x:auto;padding-bottom:.6rem;scroll-snap-type:x proximity;scrollbar-width:thin}
 .tile{flex:0 0 auto;width:min(46vw,14.5rem);scroll-snap-align:start;background:none;border:0;padding:0;text-align:left;color:inherit;font:inherit;cursor:pointer}
@@ -104,7 +107,6 @@ dialog::backdrop{background:rgba(30,24,40,.88)}
     <div class="reel" id="reel" aria-hidden="true"></div>
   </div>
 </header>
-<nav class="cats" id="nav" aria-label="Rubros" hidden><div class="wrap" id="navin"></div></nav>
 <main class="wrap" id="main"></main>
 <footer id="foot" hidden>
   <div class="box">
@@ -160,15 +162,24 @@ function tile(v) {
   return b;
 }
 
-function seccion(c) {
-  const s = el("section", "cat"); s.id = "sec-" + c.id;
-  const hd = el("div", "head"); const dot = el("span", "dot"); dot.style.background = "var(--accent)";
-  hd.append(dot, el("h2", "disp", c.nombre)); s.append(hd);
-  c.marcas.forEach(m => {
-    const d = el("div", "brandrow"); d.append(el("h3", null, m.n));
-    const r = el("div", "row"); m.v.forEach(v => r.append(tile(v))); d.append(r); s.append(d);
+function seccion(c, abierto) {
+  const d = el("details", "cat"); d.id = "sec-" + c.id; d.open = !!abierto;
+  const sm = el("summary");
+  const dot = el("span", "dot"); dot.style.background = (dark ? TONOS_OSC : TONOS)[c.tono] || "var(--line)";
+  sm.append(dot, el("h2", "disp", c.nombre), el("span", "n", c.total + (c.total === 1 ? " video" : " videos")));
+  sm.insertAdjacentHTML("beforeend", '<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6l5 5 5-5"/></svg>');
+  d.append(sm);
+  const body = el("div", "body"); let lleno = false;
+  const llenar = () => { if (lleno) return; lleno = true;
+    c.marcas.forEach(m => { const r0 = el("div", "brandrow"); r0.append(el("h3", null, m.n)); const r = el("div", "row"); m.v.forEach(v => r.append(tile(v))); r0.append(r); body.append(r0); }); };
+  d.append(body);
+  if (abierto) llenar();
+  d.addEventListener("toggle", () => {
+    if (!d.open) return; llenar();
+    document.querySelectorAll("details.cat[open]").forEach(o => { if (o !== d) o.open = false; });
+    requestAnimationFrame(() => d.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }));
   });
-  return s;
+  return d;
 }
 
 function reel(list) {
@@ -198,23 +209,14 @@ function render() {
   const key = decodeURIComponent((location.hash || "").slice(1));
   const only = CATS.find(c => c.id === key);
   const shown = only ? [only] : CATS;
-  const main = $("#main"), navin = $("#navin");
-  main.replaceChildren(); navin.replaceChildren();
+  const main = $("#main"); main.replaceChildren();
   if (!CATS.length) { main.append(el("p", "loading", "Portfolio en preparación.")); $("#hero").hidden = true; return; }
   $("#hero").hidden = false;
   reel(elegirReel(shown, !!only));
   $("#intro").textContent = S.intro || "";
-  if (only) { $("#nav").hidden = true; document.body.classList.remove("has-nav"); }
-  else {
-    $("#nav").hidden = CATS.length < 2; document.body.classList.toggle("has-nav", CATS.length > 1);
-    CATS.forEach(c => {
-      const b = el("button", null, c.nombre);
-      b.style.background = (dark ? TONOS_OSC : TONOS)[c.tono] || "var(--surface)";
-      b.onclick = () => document.getElementById("sec-" + c.id).scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
-      navin.append(b);
-    });
-  }
-  shown.forEach(c => main.append(seccion(c)));
+  const box = el("div", "cats"); box.id = "cats";
+  shown.forEach(c => box.append(seccion(c, !!only)));
+  main.append(box);
   window.scrollTo(0, 0);
 }
 
