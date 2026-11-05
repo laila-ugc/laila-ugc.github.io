@@ -2,6 +2,8 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F7F5FB">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Laila — Videos UGC para marcas</title>
 <meta name="description" content="Portfolio de videos UGC para marcas.">
@@ -16,8 +18,6 @@
   color-scheme:light; box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1C1922;--surface:#26222E;--ink:#F3EFF8;--soft:#B3AABF;--line:#36303F;--accent:#9C92FF;--onaccent:#15121A;--butter:#4A4127;--mint:#22402F;--blush:#4A2A33;--lilac:#3A2F52;--sky:#253A52;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#1C1922;--surface:#26222E;--ink:#F3EFF8;--soft:#B3AABF;--line:#36303F;--accent:#9C92FF;--onaccent:#15121A;--butter:#4A4127;--mint:#22402F;--blush:#4A2A33;--lilac:#3A2F52;--sky:#253A52;color-scheme:dark}
 *,*::before,*::after{box-sizing:inherit}
 [hidden]{display:none!important}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -128,7 +128,7 @@ const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.classN
 const playIcon = '<svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0l10 6-10 6z"/></svg>';
 const canHover = matchMedia("(hover: hover)").matches;
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+const dark = false; // la página es siempre clara
 let S = null, CATS = [];
 
 function armar(data) {
