@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mi portfolio</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#F7F5FB">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mi portfolio">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,600,100,0&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{--bg:#F7F5FB;--surface:#FFFFFF;--ink:#2B2533;--soft:#6B6375;--line:#E4DFEC;--accent:#4D3DF5;--onaccent:#FFFFFF;--danger:#B3261E;
+  color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.45 "Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+h1,h2{font-family:"Fraunces",Georgia,serif;font-weight:600;font-variation-settings:"SOFT" 100;letter-spacing:-.015em;margin:0}
+h1{font-size:28px}h2{font-size:20px}
+.wrap{max-width:40rem;margin:0 auto;padding:0 16px}
+header.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 0 10px}
+.estado{font-size:13px;color:var(--soft)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:999px;border:0;background:var(--accent);color:var(--onaccent);font:700 15px "Manrope",sans-serif;cursor:pointer;text-decoration:none}
+.btn.full{width:100%}
+.btn.soft{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn.danger{background:transparent;color:var(--danger);border:1px solid #E8C4C1}
+.btn:disabled{opacity:.5;cursor:default}
+.mini{min-height:40px;min-width:40px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 13px "Manrope",sans-serif;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.mini:disabled{opacity:.35}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.stack{display:flex;flex-direction:column;gap:12px}
+.sec{margin:18px 0}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600}
+input[type=text],input[type=email],input[type=password],input[type=tel],select,textarea{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);font:400 15px "Manrope",sans-serif}
+textarea{min-height:76px;resize:vertical}
+.hint{font-size:13px;color:var(--soft);font-weight:400}
+details.grp{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+details.grp>summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;font-weight:700}
+details.grp>summary::-webkit-details-marker{display:none}
+details.grp>summary .n{color:var(--soft);font-weight:500}
+details.grp>summary .chev{margin-left:auto;transition:transform .2s}
+details.grp[open]>summary .chev{transform:rotate(90deg)}
+.dot{width:12px;height:12px;border-radius:50%;flex:0 0 auto;border:1px solid rgba(0,0,0,.08)}
+.vrow{display:flex;align-items:center;gap:10px;padding:8px 12px;border-top:1px solid var(--line)}
+.vrow img{width:42px;height:64px;border-radius:8px;object-fit:cover;background:var(--line);flex:0 0 auto}
+.vrow .t{flex:1 1 auto;min-width:0;display:flex;flex-direction:column}
+.vrow .t b{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vrow .t span{font-size:13px;color:var(--soft)}
+.vrow .acts{display:flex;gap:4px;flex:0 0 auto}
+.star{font-size:12px;font-weight:700;color:var(--accent)}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav.tabs .in{max-width:40rem;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+nav.tabs button{min-height:60px;border:0;background:none;font:600 12px "Manrope",sans-serif;color:var(--soft);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer}
+nav.tabs button svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+nav.tabs button[aria-current=page]{color:var(--accent)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:30}
+.queue .q{display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid var(--line);font-size:14px}
+.queue .q:first-child{border-top:0}
+.queue .q .bar{flex:0 0 90px;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.queue .q .bar i{display:block;height:100%;background:var(--accent);width:0}
+.queue .q .nm{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sw{display:flex;flex-wrap:wrap;gap:8px}
+.sw button{width:44px;height:44px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
+.sw button[aria-pressed=true]{border-color:var(--ink);box-shadow:inset 0 0 0 3px #fff}
+dialog.sheet{border:0;padding:0;width:min(100%,40rem);max-width:100%;max-height:92vh;margin:auto auto 0;border-radius:22px 22px 0 0;background:var(--bg);color:var(--ink)}
+dialog.sheet::backdrop{background:rgba(30,24,40,.5)}
+dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.login .card{width:min(100%,24rem);padding:24px;display:flex;flex-direction:column;gap:14px}
+.err{color:var(--danger);font-size:14px}
+.ok{color:#1F7A4F;font-size:14px}
+.pick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.pick button{position:relative;border:3px solid transparent;border-radius:12px;padding:0;overflow:hidden;aspect-ratio:9/16;background:var(--line);cursor:pointer}
+.pick button img{width:100%;height:100%;object-fit:cover;display:block}
+.pick button[aria-pressed=true]{border-color:var(--accent)}
+.pick button span{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center}
+.seg{display:flex;gap:6px}
+.seg button{flex:1 1 0;min-height:44px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px "Manrope",sans-serif;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+#prev{width:100%;max-width:320px;border-radius:14px;display:block;margin:0 auto;box-shadow:0 8px 30px rgba(0,0,0,.12)}
+.foto{width:72px;height:72px;border-radius:50%;object-fit:cover;background:var(--line)}
+.toast{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;z-index:40}
+</style>
+</head>
+<body>
+<div id="vLogin" class="login" hidden>
+  <form class="card" id="fLogin">
+    <h1>Mi portfolio</h1>
+    <label class="f">Email<input type="email" id="lEmail" autocomplete="username" required></label>
+    <label class="f">Contraseña<input type="password" id="lPass" autocomplete="current-password" required></label>
+    <div class="err" id="lErr" hidden></div>
+    <button class="btn full" type="submit">Entrar</button>
+    <button class="mini" type="button" id="lOlvido">Olvidé mi contraseña</button>
+  </form>
+</div>
+
+<div id="vApp" hidden>
+  <div class="wrap">
+    <header class="bar"><h1 id="titulo">Videos</h1><span class="estado" id="estado"></span></header>
+
+    <section id="tVideos">
+      <label class="btn full" for="fVideos" style="cursor:pointer">
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Agregar videos
+      </label>
+      <input type="file" id="fVideos" accept="video/*" multiple hidden>
+      <p class="hint" style="text-align:center;margin:8px 0 0">Podés elegir varios a la vez. Máximo 100 MB cada uno.</p>
+      <div class="card queue sec" id="queue" hidden></div>
+      <div class="stack sec" id="listaVideos"></div>
+    </section>
+
+    <section id="tRubros" hidden>
+      <div class="stack" id="listaRubros"></div>
+      <div class="card sec" style="padding:14px;display:flex;gap:8px">
+        <input type="text" id="nuevoRubro" placeholder="Nuevo rubro (ej: Mascotas)">
+        <button class="btn" id="addRubro">Agregar</button>
+      </div>
+    </section>
+
+    <section id="tPagina" hidden>
+      <div class="stack">
+        <div style="display:flex;align-items:center;gap:14px">
+          <img class="foto" id="pFoto" alt="Foto de perfil">
+          <label class="btn soft" for="fFoto" style="cursor:pointer">Cambiar foto</label>
+          <input type="file" id="fFoto" accept="image/*" hidden>
+        </div>
+        <label class="f">Nombre<input type="text" data-k="nombre"></label>
+        <label class="f">Debajo del nombre<input type="text" data-k="rol"></label>
+        <label class="f">Frase principal<input type="text" data-k="frase"></label>
+        <label class="f">Presentación<textarea data-k="intro"></textarea></label>
+        <label class="f">Título del cierre<input type="text" data-k="cierreTitulo"></label>
+        <label class="f">Texto del cierre<textarea data-k="cierreTexto"></textarea></label>
+        <div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Color de los detalles<div class="sw" id="swAcento"></div></div>
+        <a class="btn soft full" id="verPagina" target="_blank" rel="noopener">Ver mi página</a>
+      </div>
+      <div class="card sec" style="padding:16px">
+        <div class="stack">
+          <h2>Cuenta</h2>
+          <label class="f">Nueva contraseña<input type="password" id="pw1" autocomplete="new-password"></label>
+          <label class="f">Repetir contraseña<input type="password" id="pw2" autocomplete="new-password"></label>
+          <div id="pwMsg" hidden></div>
+          <button class="btn soft" id="cambiarPw">Cambiar contraseña</button>
+          <button class="btn danger" id="salir">Cerrar sesión</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="tContacto" hidden>
+      <div class="stack">
+        <p class="hint" style="margin:0">Lo que completes aparece en la página y en los flyers. Lo vacío no se muestra.</p>
+        <label class="f">Botón principal<select id="cPrincipal"></select></label>
+        <div class="card" style="padding:14px"><div class="stack" id="cCampos"></div></div>
+        <label class="f">Mensaje que llega por WhatsApp<textarea id="cMensaje"></textarea></label>
+      </div>
+    </section>
+
+    <section id="tFlyer" hidden>
+      <div class="stack">
+        <label class="f">Frase<input type="text" id="flFrase"></label>
+        <label class="f">Rubro<select id="flRubro"></select></label>
+        <div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Elegí 3 videos<div class="pick" id="flPick"></div></div>
+        <div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Estilo<div class="seg" id="flEstilo"><button data-v="celus" aria-pressed="true">Celulares</button><button data-v="foto" aria-pressed="false">Foto completa</button></div></div>
+        <div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Formato<div class="seg" id="flFormato"><button data-v="historia" aria-pressed="true">Historia</button><button data-v="post" aria-pressed="false">Posteo</button></div></div>
+        <div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Fondo<div class="sw" id="flFondo"></div></div>
+        <button class="btn full" id="flGenerar">Generar flyer</button>
+        <div id="flRes" class="stack" hidden>
+          <img id="prev" alt="Vista previa del flyer">
+          <button class="btn full" id="flCompartir">Compartir</button>
+          <a class="btn soft full" id="flBajar" download="flyer.png">Descargar</a>
+        </div>
+        <div class="err" id="flErr" hidden></div>
+      </div>
+    </section>
+  </div>
+
+  <nav class="tabs" aria-label="Secciones"><div class="in">
+    <button data-t="Videos" aria-current="page"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="13" height="14" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg>Videos</button>
+    <button data-t="Rubros"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>Rubros</button>
+    <button data-t="Pagina"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Página</button>
+    <button data-t="Contacto"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg>Contacto</button>
+    <button data-t="Flyer"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6M9 11h6"/></svg>Flyer</button>
+  </div></nav>
+</div>
+
+<dialog class="sheet" id="dEdit">
+  <form class="in" method="dialog" id="fEdit">
+    <h2>Editar video</h2>
+    <div style="display:flex;gap:12px;align-items:flex-end">
+      <img id="eImg" alt="" style="width:80px;height:142px;border-radius:12px;object-fit:cover;background:var(--line)">
+      <div class="stack" style="gap:8px">
+        <label class="btn soft" for="fPortada" style="cursor:pointer">Cambiar portada</label>
+        <input type="file" id="fPortada" accept="image/*" hidden>
+        <button type="button" class="mini" id="ePortadaAuto">Usar portada automática</button>
+      </div>
+    </div>
+    <label class="f">Título<input type="text" id="eTitulo"></label>
+    <label class="f">Marca<input type="text" id="eMarca" list="marcas"></label>
+    <datalist id="marcas"></datalist>
+    <label class="f">Rubro<select id="eCat"></select></label>
+    <label style="display:flex;align-items:center;gap:10px;font-size:15px;min-height:44px"><input type="checkbox" id="eDest" style="width:22px;height:22px"> Mostrar arriba en la página</label>
+    <button class="btn full" value="ok">Guardar</button>
+    <button class="btn danger full" type="button" id="eQuitar">Quitar video</button>
+    <button class="mini" value="cancel" formnovalidate>Cancelar</button>
+  </form>
+</dialog>
+
+<div class="toast" id="toast" hidden></div>
+
+<script type="module">
+import { FIREBASE, CLOUD, SDK, ACENTOS, TONOS, INICIAL, CONOCIDOS, posterSrc, imgSrc, cl, linksContacto } from "./config.js";
+const { initializeApp } = await import(SDK + "firebase-app.js");
+const A = await import(SDK + "firebase-auth.js");
+const F = await import(SDK + "firebase-firestore.js");
+
+const app = initializeApp(FIREBASE);
+const auth = A.getAuth(app);
+const db = F.getFirestore(app);
+const REF = F.doc(db, "publico", "sitio");
+const SITIO = new URL("./", location.href).href;
+
+const $ = s => document.querySelector(s);
+const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.className = c; if (txt != null) e.textContent = txt; return e; };
+let S = null;
+
+// ---------- utilidades ----------
+function toast(t) { const x = $("#toast"); x.textContent = t; x.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => x.hidden = true, 2200); }
+function estado(t) { $("#estado").textContent = t; }
+let saveT = null;
+function guardar(inmediato) {
+  estado("Guardando…");
+  clearTimeout(saveT);
+  saveT = setTimeout(async () => {
+    try { await F.setDoc(REF, JSON.parse(JSON.stringify(S))); estado("Guardado"); }
+    catch (e) { console.error(e); estado("No se guardó"); toast(e.code === "permission-denied" ? "Esta cuenta no tiene permiso para editar" : "No se pudo guardar. Revisá la conexión."); }
+  }, inmediato ? 0 : 700);
+}
+const uid = () => Math.random().toString(36).slice(2, 10);
+const slug = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 30) || "rubro";
+const catDe = id => S.categorias.find(c => c.id === id);
+
+function subir(file, onp) {
+  return new Promise((ok, mal) => {
+    const fd = new FormData(); fd.append("file", file); fd.append("upload_preset", CLOUD.preset);
+    const x = new XMLHttpRequest();
+    x.open("POST", `https://api.cloudinary.com/v1_1/${CLOUD.name}/auto/upload`);
+    x.upload.onprogress = e => e.lengthComputable && onp && onp(e.loaded / e.total);
+    x.onload = () => { try { const r = JSON.parse(x.responseText); x.status < 300 ? ok(r) : mal(new Error(r.error?.message || "Error al subir")); } catch (e) { mal(e); } };
+    x.onerror = () => mal(new Error("Sin conexión"));
+    x.send(fd);
+  });
+}
+
+// ---------- login ----------
+A.onAuthStateChanged(auth, async u => {
+  if (!u) { $("#vApp").hidden = true; $("#vLogin").hidden = false; return; }
+  $("#vLogin").hidden = true;
+  try {
+    const snap = await F.getDoc(REF);
+    if (snap.exists()) S = { ...structuredClone(INICIAL), ...snap.data() };
+    else { S = structuredClone(INICIAL); await F.setDoc(REF, S); }
+    S.contacto = { ...INICIAL.contacto, ...(S.contacto || {}) };
+  } catch (e) {
+    console.error(e); toast("No se pudo cargar. Revisá la conexión.");
+    S = S || structuredClone(INICIAL);
+  }
+  $("#vApp").hidden = false;
+  pintarTodo();
+});
+$("#fLogin").onsubmit = async e => {
+  e.preventDefault(); const er = $("#lErr"); er.hidden = true;
+  try { await A.signInWithEmailAndPassword(auth, $("#lEmail").value.trim(), $("#lPass").value); }
+  catch (x) { er.textContent = "Email o contraseña incorrectos."; er.hidden = false; }
+};
+$("#lOlvido").onclick = async () => {
+  const em = $("#lEmail").value.trim(); const er = $("#lErr");
+  if (!em) { er.textContent = "Escribí tu email arriba y volvé a tocar."; er.hidden = false; return; }
+  try { await A.sendPasswordResetEmail(auth, em); er.textContent = "Te mandamos un email para elegir una contraseña nueva."; er.hidden = false; }
+  catch { er.textContent = "No se pudo enviar el email."; er.hidden = false; }
+};
+
+// ---------- pestañas ----------
+document.querySelectorAll("nav.tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("nav.tabs button").forEach(x => x.removeAttribute("aria-current"));
+  b.setAttribute("aria-current", "page");
+  ["Videos", "Rubros", "Pagina", "Contacto", "Flyer"].forEach(t => $("#t" + t).hidden = t !== b.dataset.t);
+  $("#titulo").textContent = b.textContent.trim();
+  if (b.dataset.t === "Flyer") pintarFlyer();
+  window.scrollTo(0, 0);
+});
+
+function pintarTodo() {
+  document.documentElement.style.setProperty("--accent", ACENTOS[S.acento] || ACENTOS.violeta);
+  pintarVideos(); pintarRubros(); pintarPagina(); pintarContacto();
+}
+
+// ---------- videos ----------
+const abiertos = new Set(["__primero"]);
+function pintarVideos() {
+  const L = $("#listaVideos"); L.replaceChildren();
+  const grupos = S.categorias.map(c => ({ c, v: S.videos.filter(v => v.cat === c.id) }));
+  const sueltos = S.videos.filter(v => !catDe(v.cat));
+  if (sueltos.length) grupos.unshift({ c: { id: "__sin", nombre: "Sin rubro", tono: "durazno" }, v: sueltos });
+  if (!S.videos.length) L.append(el("p", "hint", "Todavía no hay videos. Tocá “Agregar videos”."));
+  grupos.forEach((g, gi) => {
+    const d = el("details", "grp");
+    if (abiertos.has(g.c.id) || (abiertos.has("__primero") && gi === 0)) d.open = true;
+    d.ontoggle = () => { abiertos.delete("__primero"); d.open ? abiertos.add(g.c.id) : abiertos.delete(g.c.id); };
+    const s = el("summary"); const dot = el("span", "dot"); dot.style.background = TONOS[g.c.tono] || "#eee";
+    s.append(dot, el("span", null, g.c.nombre), el("span", "n", String(g.v.length)));
+    const ch = el("span", "chev", "›"); s.append(ch); d.append(s);
+    g.v.forEach((v, i) => {
+      const r = el("div", "vrow");
+      const im = el("img"); im.src = posterSrc(v); im.alt = ""; im.loading = "lazy";
+      const t = el("div", "t"); t.append(el("b", null, v.titulo || "Sin título"), el("span", null, (v.marca || "Sin marca") + (v.destacado ? " · " : "")));
+      if (v.destacado) t.lastChild.append(el("span", "star", "Arriba"));
+      const a = el("div", "acts");
+      const up = el("button", "mini", "↑"); up.setAttribute("aria-label", "Subir"); up.disabled = i === 0; up.onclick = () => mover(v, g.v, -1);
+      const dn = el("button", "mini", "↓"); dn.setAttribute("aria-label", "Bajar"); dn.disabled = i === g.v.length - 1; dn.onclick = () => mover(v, g.v, 1);
+      const ed = el("button", "mini", "Editar"); ed.onclick = () => editar(v);
+      a.append(up, dn, ed); r.append(im, t, a); d.append(r);
+    });
+    if (!g.v.length) { const p = el("div", "vrow"); p.append(el("span", "hint", "Sin videos en este rubro.")); d.append(p); }
+    L.append(d);
+  });
+  const dl = $("#marcas"); dl.replaceChildren();
+  [...new Set(S.videos.map(v => v.marca).filter(Boolean))].forEach(m => { const o = el("option"); o.value = m; dl.append(o); });
+}
+function mover(v, grupo, dir) {
+  const j = grupo.indexOf(v) + dir; if (j < 0 || j >= grupo.length) return;
+  const otro = grupo[j]; const a = S.videos.indexOf(v), b = S.videos.indexOf(otro);
+  [S.videos[a], S.videos[b]] = [S.videos[b], S.videos[a]];
+  pintarVideos(); guardar();
+}
+
+$("#fVideos").onchange = async e => {
+  const files = [...e.target.files]; e.target.value = "";
+  if (!files.length) return;
+  const Q = $("#queue"); Q.hidden = false;
+  const filas = files.map(f => { const q = el("div", "q"); const nm = el("span", "nm", f.name); const bar = el("span", "bar"); const i = el("i"); bar.append(i); const st = el("span", "hint", "En espera"); q.append(nm, bar, st); Q.append(q); return { f, i, st }; });
+  for (const r of filas) {
+    if (r.f.size > 100 * 1024 * 1024) { r.st.textContent = "Muy pesado (máx. 100 MB)"; r.st.className = "err"; continue; }
+    r.st.textContent = "Subiendo";
+    try {
+      const res = await subir(r.f, p => r.i.style.width = Math.round(p * 100) + "%");
+      const base = r.f.name.replace(/\.[^.]+$/, "").toLowerCase();
+      const k = CONOCIDOS[base];
+      S.videos.push({ id: uid(), url: res.secure_url, h: res.width > res.height, titulo: k ? k[2] : r.f.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim(), marca: k ? k[1] : "", cat: k ? k[0] : "", destacado: false, portada: "" });
+      r.i.style.width = "100%"; r.st.textContent = "Listo"; r.st.className = "ok";
+      if (k) abiertos.add(k[0]); else abiertos.add("__sin");
+      pintarVideos(); guardar(true);
+    } catch (x) { r.st.textContent = x.message || "Error"; r.st.className = "err"; }
+  }
+  setTimeout(() => { if ([...Q.querySelectorAll(".err")].length === 0) { Q.replaceChildren(); Q.hidden = true; } }, 2500);
+  const sin = S.videos.filter(v => !catDe(v.cat)).length;
+  if (sin) toast("Asigná rubro y marca a los videos nuevos con “Editar”");
+};
+
+let enEdicion = null;
+function editar(v) {
+  enEdicion = v;
+  $("#eImg").src = posterSrc(v); $("#eTitulo").value = v.titulo || ""; $("#eMarca").value = v.marca || ""; $("#eDest").checked = !!v.destacado;
+  const s = $("#eCat"); s.replaceChildren();
+  const o0 = el("option", null, "Elegí un rubro"); o0.value = ""; s.append(o0);
+  S.categorias.forEach(c => { const o = el("option", null, c.nombre); o.value = c.id; s.append(o); });
+  s.value = catDe(v.cat) ? v.cat : "";
+  $("#dEdit").showModal();
+}
+$("#dEdit").addEventListener("close", () => {
+  const v = enEdicion; if (!v || $("#dEdit").returnValue !== "ok") return;
+  v.titulo = $("#eTitulo").value.trim(); v.marca = $("#eMarca").value.trim(); v.cat = $("#eCat").value; v.destacado = $("#eDest").checked;
+  if (v.cat) abiertos.add(v.cat);
+  pintarVideos(); guardar(true);
+});
+$("#fPortada").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f || !enEdicion) return;
+  toast("Subiendo portada…");
+  try { const r = await subir(f); enEdicion.portada = r.secure_url; $("#eImg").src = posterSrc(enEdicion); pintarVideos(); guardar(true); toast("Portada cambiada"); }
+  catch (x) { toast("No se pudo subir la portada"); }
+};
+$("#ePortadaAuto").onclick = () => { if (!enEdicion) return; enEdicion.portada = ""; $("#eImg").src = posterSrc(enEdicion); pintarVideos(); guardar(true); };
+$("#eQuitar").onclick = () => {
+  if (!enEdicion || !confirm("¿Quitar este video del portfolio?")) return;
+  S.videos = S.videos.filter(x => x !== enEdicion); enEdicion = null;
+  $("#dEdit").close("cancel"); pintarVideos(); guardar(true); toast("Video quitado");
+};
+
+// ---------- rubros ----------
+function pintarRubros() {
+  const L = $("#listaRubros"); L.replaceChildren();
+  S.categorias.forEach((c, i) => {
+    const n = S.videos.filter(v => v.cat === c.id).length;
+    const box = el("div", "card"); box.style.padding = "14px";
+    const st = el("div", "stack"); st.style.gap = "10px";
+    const top = el("div"); top.style.cssText = "display:flex;gap:8px;align-items:center";
+    const inp = el("input"); inp.type = "text"; inp.value = c.nombre; inp.setAttribute("aria-label", "Nombre del rubro");
+    inp.onchange = () => { c.nombre = inp.value.trim() || c.nombre; pintarVideos(); guardar(); };
+    const up = el("button", "mini", "↑"); up.disabled = i === 0; up.setAttribute("aria-label", "Subir"); up.onclick = () => { [S.categorias[i - 1], S.categorias[i]] = [S.categorias[i], S.categorias[i - 1]]; pintarRubros(); pintarVideos(); guardar(); };
+    const dn = el("button", "mini", "↓"); dn.disabled = i === S.categorias.length - 1; dn.setAttribute("aria-label", "Bajar"); dn.onclick = () => { [S.categorias[i + 1], S.categorias[i]] = [S.categorias[i], S.categorias[i + 1]]; pintarRubros(); pintarVideos(); guardar(); };
+    top.append(inp, up, dn);
+    const sw = el("div", "sw");
+    Object.entries(TONOS).forEach(([k, col]) => { const b = el("button"); b.style.background = col; b.setAttribute("aria-label", k); b.setAttribute("aria-pressed", String(c.tono === k)); b.onclick = () => { c.tono = k; pintarRubros(); pintarVideos(); guardar(); }; sw.append(b); });
+    const acts = el("div"); acts.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;align-items:center";
+    acts.append(el("span", "hint", n + (n === 1 ? " video" : " videos")));
+    const cp = el("button", "mini", "Copiar link"); cp.style.marginLeft = "auto";
+    cp.onclick = async () => { const u = SITIO + "#" + c.id; try { await navigator.clipboard.writeText(u); toast("Link copiado"); } catch { prompt("Copiá este link:", u); } };
+    const del = el("button", "mini", "Eliminar"); del.style.color = "var(--danger)";
+    del.onclick = () => { if (n) { toast("Primero mové sus videos a otro rubro"); return; } if (confirm("¿Eliminar el rubro “" + c.nombre + "”?")) { S.categorias.splice(i, 1); pintarRubros(); pintarVideos(); guardar(true); } };
+    acts.append(cp, del);
+    st.append(top, sw, acts); box.append(st); L.append(box);
+  });
+}
+$("#addRubro").onclick = () => {
+  const nom = $("#nuevoRubro").value.trim(); if (!nom) return;
+  let id = slug(nom); while (catDe(id)) id = slug(nom) + "-" + uid().slice(0, 3);
+  const usados = S.categorias.map(c => c.tono); const tono = Object.keys(TONOS).find(t => !usados.includes(t)) || "lila";
+  S.categorias.push({ id, nombre: nom, tono }); $("#nuevoRubro").value = "";
+  pintarRubros(); pintarVideos(); guardar(true); toast("Rubro agregado");
+};
+
+// ---------- página ----------
+function pintarPagina() {
+  document.querySelectorAll("#tPagina [data-k]").forEach(i => { i.value = S[i.dataset.k] || ""; i.oninput = () => { S[i.dataset.k] = i.value; guardar(); }; });
+  $("#pFoto").src = S.foto ? imgSrc(S.foto, 200) : "icon-192.png";
+  const sw = $("#swAcento"); sw.replaceChildren();
+  Object.entries(ACENTOS).forEach(([k, col]) => { const b = el("button"); b.style.background = col; b.setAttribute("aria-label", k); b.setAttribute("aria-pressed", String(S.acento === k)); b.onclick = () => { S.acento = k; pintarTodo(); guardar(); }; sw.append(b); });
+  $("#verPagina").href = SITIO;
+}
+$("#fFoto").onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return; toast("Subiendo foto…");
+  try { const r = await subir(f); S.foto = r.secure_url; pintarPagina(); guardar(true); toast("Foto cambiada"); } catch { toast("No se pudo subir la foto"); }
+};
+$("#cambiarPw").onclick = async () => {
+  const m = $("#pwMsg"); m.hidden = false; const a = $("#pw1").value, b = $("#pw2").value;
+  if (a.length < 6) { m.className = "err"; m.textContent = "Mínimo 6 caracteres."; return; }
+  if (a !== b) { m.className = "err"; m.textContent = "Las contraseñas no coinciden."; return; }
+  try { await A.updatePassword(auth.currentUser, a); m.className = "ok"; m.textContent = "Contraseña cambiada."; $("#pw1").value = $("#pw2").value = ""; }
+  catch (x) { m.className = "err"; m.textContent = x.code === "auth/requires-recent-login" ? "Por seguridad, cerrá sesión, volvé a entrar y probá de nuevo." : "No se pudo cambiar."; }
+};
+$("#salir").onclick = () => A.signOut(auth);
+
+// ---------- contacto ----------
+const CAMPOS = [["whatsapp", "WhatsApp", "tel", "+54 9 11 1234 5678"], ["telefono", "Teléfono", "tel", "+54 9 11 1234 5678"], ["email", "Email", "email", "tu@email.com"], ["instagram", "Instagram", "text", "@usuario"], ["tiktok", "TikTok", "text", "@usuario"], ["facebook", "Facebook", "text", "link de la página"], ["linkedin", "LinkedIn", "text", "link del perfil"], ["youtube", "YouTube", "text", "link del canal"], ["web", "Web", "text", "www.tusitio.com"]];
+function pintarContacto() {
+  const C = S.contacto; const box = $("#cCampos"); box.replaceChildren();
+  const sel = $("#cPrincipal"); sel.replaceChildren();
+  CAMPOS.forEach(([k, n, t, ph]) => {
+    const l = el("label", "f", n); const i = el("input"); i.type = t; i.placeholder = ph; i.value = C[k] || "";
+    i.oninput = () => { C[k] = i.value; guardar(); }; i.onchange = pintarContacto;
+    l.append(i); box.append(l);
+    if (String(C[k] || "").trim()) { const o = el("option", null, n); o.value = k; sel.append(o); }
+  });
+  if (!sel.options.length) { const o = el("option", null, "Completá al menos un dato"); o.value = ""; sel.append(o); }
+  sel.value = [...sel.options].some(o => o.value === C.principal) ? C.principal : sel.options[0].value;
+  sel.onchange = () => { C.principal = sel.value; guardar(); };
+  const m = $("#cMensaje"); m.value = C.mensaje || ""; m.oninput = () => { C.mensaje = m.value; guardar(); };
+}
+
+// ---------- flyer ----------
+let flSel = [], flEstilo = "celus", flFormato = "historia", flFondo = "lila";
+function pintarFlyer() {
+  if (!$("#flFrase").value) $("#flFrase").value = S.frase || "";
+  const s = $("#flRubro"); const prev = s.value; s.replaceChildren();
+  const o0 = el("option", null, "Todos los rubros"); o0.value = ""; s.append(o0);
+  S.categorias.forEach(c => { if (S.videos.some(v => v.cat === c.id)) { const o = el("option", null, c.nombre); o.value = c.id; s.append(o); } });
+  s.value = [...s.options].some(o => o.value === prev) ? prev : "";
+  s.onchange = () => { flSel = []; pintarPick(); };
+  pintarPick();
+  const f = $("#flFondo"); f.replaceChildren();
+  [...Object.entries(TONOS), ["acento", ACENTOS[S.acento] || ACENTOS.violeta]].forEach(([k, col]) => { const b = el("button"); b.style.background = col; b.setAttribute("aria-label", k); b.setAttribute("aria-pressed", String(flFondo === k)); b.onclick = () => { flFondo = k; pintarFlyer(); }; f.append(b); });
+}
+function pintarPick() {
+  const cat = $("#flRubro").value;
+  const lista = S.videos.filter(v => cat ? v.cat === cat : catDe(v.cat));
+  flSel = flSel.filter(v => lista.includes(v));
+  if (!flSel.length) flSel = lista.filter(v => !v.h).slice(0, 3);
+  const P = $("#flPick"); P.replaceChildren();
+  lista.forEach(v => {
+    const b = el("button"); const i = el("img"); i.src = posterSrc(v); i.alt = v.titulo || ""; b.append(i);
+    const n = flSel.indexOf(v); b.setAttribute("aria-pressed", String(n >= 0)); if (n >= 0) b.append(el("span", null, String(n + 1)));
+    b.onclick = () => { const k = flSel.indexOf(v); if (k >= 0) flSel.splice(k, 1); else { if (flSel.length >= 3) flSel.shift(); flSel.push(v); } pintarPick(); };
+    P.append(b);
+  });
+}
+["flEstilo", "flFormato"].forEach(id => $("#" + id).querySelectorAll("button").forEach(b => b.onclick = () => {
+  $("#" + id).querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", "false")); b.setAttribute("aria-pressed", "true");
+  if (id === "flEstilo") flEstilo = b.dataset.v; else flFormato = b.dataset.v;
+}));
+
+function cargarImg(src) { return new Promise((ok, mal) => { const i = new Image(); i.crossOrigin = "anonymous"; i.onload = () => ok(i); i.onerror = mal; i.src = src; }); }
+function cubrir(ctx, img, x, y, w, h, r) {
+  ctx.save(); redondo(ctx, x, y, w, h, r); ctx.clip();
+  const s = Math.max(w / img.width, h / img.height); const iw = img.width * s, ih = img.height * s;
+  ctx.drawImage(img, x + (w - iw) / 2, y + (h - ih) / 2, iw, ih); ctx.restore();
+}
+function redondo(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r || 0); }
+function lineas(ctx, txt, maxW) {
+  const out = []; let l = "";
+  txt.split(/\s+/).forEach(p => { const t = l ? l + " " + p : p; if (ctx.measureText(t).width > maxW && l) { out.push(l); l = p; } else l = t; });
+  if (l) out.push(l); return out;
+}
+function qr(texto, tam) {
+  const d = document.createElement("div");
+  new QRCode(d, { text: texto, width: tam, height: tam, colorDark: "#2B2533", colorLight: "#FFFFFF", correctLevel: QRCode.CorrectLevel.M });
+  return d.querySelector("canvas");
+}
+const lum = hex => { const n = parseInt(hex.slice(1), 16); return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255; };
+
+$("#flGenerar").onclick = async () => {
+  const err = $("#flErr"); err.hidden = true;
+  if (!flSel.length) { err.textContent = "Elegí al menos un video."; err.hidden = false; return; }
+  $("#flGenerar").disabled = true; $("#flGenerar").textContent = "Generando…";
+  try {
+    await Promise.all([document.fonts.load('600 100px "Fraunces"'), document.fonts.load('700 40px "Manrope"'), document.fonts.load('500 40px "Manrope"')]);
+    const W = 1080, H = flFormato === "post" ? 1350 : 1920;
+    const c = document.createElement("canvas"); c.width = W; c.height = H; const x = c.getContext("2d");
+    const fondo = flFondo === "acento" ? (ACENTOS[S.acento] || ACENTOS.violeta) : TONOS[flFondo];
+    const tinta = lum(fondo) > 0.6 ? "#2B2533" : "#FFFFFF";
+    const acento = ACENTOS[S.acento] || ACENTOS.violeta;
+    const cat = $("#flRubro").value;
+    const link = SITIO + (cat ? "#" + cat : "");
+    const contacto = linksContacto(S.contacto)[0];
+    const imgs = await Promise.all(flSel.map(v => cargarImg(v.portada ? cl(v.portada, "c_fill,w_1080,h_1920,g_auto,q_auto", "jpg") : cl(v.url, "c_limit,w_1080,so_1,q_auto", "jpg"))));
+    const frase = $("#flFrase").value.trim() || S.frase || "";
+    const pie = (y0, oscuro) => {
+      // tarjeta inferior con nombre, contacto y QR
+      const h = 220, m = 56, y = y0;
+      x.fillStyle = "#FFFFFF"; redondo(x, m, y, W - 2 * m, h, 36); x.fill();
+      const q = qr(link, 170); x.drawImage(q, W - m - 25 - 170, y + 25, 170, 170);
+      x.fillStyle = "#2B2533"; x.font = '600 64px "Fraunces"'; x.textBaseline = "top"; x.fillText(S.nombre || "", m + 40, y + 34);
+      x.font = '500 34px "Manrope"'; x.fillStyle = "#6B6375"; x.fillText(S.rol || "", m + 40, y + 112);
+      if (contacto) { x.font = '700 36px "Manrope"'; x.fillStyle = acento; x.fillText(contacto.t + ": " + contacto.valor, m + 40, y + 160, W - 2 * m - 280); }
+    };
+    if (flEstilo === "foto") {
+      cubrir(x, imgs[0], 0, 0, W, H, 0);
+      const g = x.createLinearGradient(0, 0, 0, H * 0.55); g.addColorStop(0, "rgba(20,16,26,.75)"); g.addColorStop(1, "rgba(20,16,26,0)");
+      x.fillStyle = g; x.fillRect(0, 0, W, H * 0.55);
+      x.fillStyle = "#FFFFFF"; x.font = '600 118px "Fraunces"'; x.textBaseline = "top";
+      lineas(x, frase, W - 140).forEach((l, i) => x.fillText(l, 70, 90 + i * 124));
+      pie(H - 220 - 56);
+    } else {
+      x.fillStyle = fondo; x.fillRect(0, 0, W, H);
+      x.fillStyle = tinta; x.font = '600 104px "Fraunces"'; x.textBaseline = "top"; x.textAlign = "center";
+      const ls = lineas(x, frase, W - 140); ls.forEach((l, i) => x.fillText(l, W / 2, 90 + i * 112)); x.textAlign = "left";
+      const top = 90 + ls.length * 112 + 60;
+      const disp = H - top - 220 - 56 - 70;
+      const ph = Math.min(disp, imgs.length > 1 ? 760 : 900), pw = ph * 9 / 16;
+      const n = imgs.length; const cx = W / 2;
+      const pos = n === 1 ? [[cx, 1, 0]] : n === 2 ? [[cx - pw * 0.5, 0.9, -5], [cx + pw * 0.5, 0.9, 5]] : [[cx - pw * 0.74, 0.82, -6], [cx + pw * 0.74, 0.82, 6], [cx, 1, 0]];
+      const orden = n === 3 ? [0, 1, 2] : pos.map((_, i) => i);
+      orden.forEach(i => {
+        const [px, sc, rot] = pos[i]; const img = n === 3 ? imgs[[0, 2, 1][i]] : imgs[i];
+        const w = pw * sc, h = ph * sc, y = top + Math.max(0, (disp - ph) / 2) + (ph - h) / 2;
+        x.save(); x.translate(px, y + h / 2); x.rotate(rot * Math.PI / 180);
+        x.shadowColor = "rgba(0,0,0,.25)"; x.shadowBlur = 40; x.shadowOffsetY = 18;
+        x.fillStyle = "#1B1720"; redondo(x, -w / 2, -h / 2, w, h, 44); x.fill(); x.shadowColor = "transparent";
+        cubrir(x, img, -w / 2 + 12, -h / 2 + 12, w - 24, h - 24, 34); x.restore();
+      });
+      pie(H - 220 - 56);
+    }
+    const url = c.toDataURL("image/png");
+    $("#prev").src = url; $("#flBajar").href = url; $("#flRes").hidden = false;
+    c.toBlob(b => { flBlob = b; });
+    $("#flRes").scrollIntoView({ behavior: "smooth" });
+  } catch (e) { console.error(e); err.textContent = "No se pudo generar. Revisá la conexión y probá de nuevo."; err.hidden = false; }
+  $("#flGenerar").disabled = false; $("#flGenerar").textContent = "Generar flyer";
+};
+let flBlob = null;
+$("#flCompartir").onclick = async () => {
+  if (!flBlob) return;
+  const file = new File([flBlob], "flyer.png", { type: "image/png" });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file] }); } catch {} }
+  else $("#flBajar").click();
+};
+
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+</body>
+</html>

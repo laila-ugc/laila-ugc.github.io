@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Laila — Videos UGC para marcas</title>
+<meta name="description" content="Portfolio de videos UGC para marcas.">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,600,100,0&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F5FB; --surface:#FFFFFF; --ink:#2B2533; --soft:#6B6375; --line:#E7E2EF; --accent:#4D3DF5; --onaccent:#FFFFFF;
+  --butter:#FFEDB3; --mint:#D3F1DE; --blush:#FBDCE3; --lilac:#E6DCF8; --sky:#D6E8FB;
+  color-scheme:light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1C1922;--surface:#26222E;--ink:#F3EFF8;--soft:#B3AABF;--line:#36303F;--accent:#9C92FF;--onaccent:#15121A;--butter:#4A4127;--mint:#22402F;--blush:#4A2A33;--lilac:#3A2F52;--sky:#253A52;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1C1922;--surface:#26222E;--ink:#F3EFF8;--soft:#B3AABF;--line:#36303F;--accent:#9C92FF;--onaccent:#15121A;--butter:#4A4127;--mint:#22402F;--blush:#4A2A33;--lilac:#3A2F52;--sky:#253A52;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.55 "Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+.disp{font-family:"Fraunces",Georgia,"Times New Roman",serif;font-weight:600;font-variation-settings:"SOFT" 100,"WONK" 0;letter-spacing:-.02em}
+.wrap{max-width:76rem;margin:0 auto;padding:0 clamp(1.25rem,4vw,3rem)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-top:1.2rem;padding-bottom:1.2rem}
+.me{display:flex;align-items:center;gap:.75rem}
+.me img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--surface);box-shadow:0 0 0 2px var(--lilac)}
+.me b{font-weight:700;font-size:1.05rem;display:block;line-height:1.1}
+.me span{font-size:.85rem;color:var(--soft)}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 1.4rem;border-radius:999px;background:var(--accent);color:var(--onaccent);font-weight:700;text-decoration:none;border:0;font-size:1rem;cursor:pointer;font-family:inherit}
+.btn.soft{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.hero{padding:clamp(1.5rem,5vw,3.5rem) 0 clamp(2.5rem,6vw,4rem)}
+.hero .in{display:flex;flex-wrap:wrap;align-items:center;gap:2.5rem 3rem}
+.hero .txt{flex:1 1 24rem;min-width:0}
+.hero h1{margin:0;font-size:clamp(2.8rem,7.5vw,5.6rem);line-height:1;max-width:12ch}
+.hero p{margin:1.1rem 0 1.6rem;font-size:clamp(1.05rem,2vw,1.2rem);max-width:30rem;color:var(--soft)}
+.reel{flex:1 1 22rem;display:flex;justify-content:center;align-items:flex-end;gap:clamp(.6rem,1.5vw,1rem);min-width:0}
+.reel .ph{position:relative;width:clamp(6.5rem,14vw,12.5rem);aspect-ratio:9/16;border-radius:26px;padding:7px;background:var(--butter)}
+.reel .ph:nth-child(2){width:clamp(8rem,18vw,15.5rem);background:var(--lilac)}
+.reel .ph:nth-child(3){background:var(--mint)}
+.reel .ph.h{aspect-ratio:16/9;width:clamp(16rem,34vw,26rem)}
+.reel .ph .clip{position:absolute;inset:7px;border-radius:20px;overflow:hidden;background:#000}
+.reel video,.reel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+nav.cats{position:sticky;top:env(safe-area-inset-top,0px);z-index:4;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px)}
+body.has-nav::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+nav.cats .wrap{display:flex;gap:.5rem;overflow-x:auto;padding-top:.75rem;padding-bottom:.75rem;scrollbar-width:none}
+nav.cats button{flex:0 0 auto;font:inherit;font-weight:600;min-height:44px;padding:0 1.15rem;border-radius:999px;border:0;color:var(--ink);cursor:pointer}
+nav.cats button:hover{box-shadow:inset 0 0 0 2px var(--ink)}
+section.cat{padding:2.75rem 0 .5rem;scroll-margin-top:4.5rem}
+section.cat .head{display:flex;align-items:center;gap:.75rem;margin:0 0 1.75rem}
+section.cat h2{margin:0;font-size:clamp(2rem,5vw,3.2rem);line-height:1}
+section.cat .dot{width:.9rem;height:.9rem;border-radius:50%;flex:0 0 auto}
+.brandrow{margin-bottom:2.5rem}
+.brandrow h3{margin:0 0 .9rem;font-size:.9rem;font-weight:700;color:var(--soft)}
+.row{display:flex;align-items:flex-start;gap:1rem;overflow-x:auto;padding-bottom:.6rem;scroll-snap-type:x proximity;scrollbar-width:thin}
+.tile{flex:0 0 auto;width:min(46vw,14.5rem);scroll-snap-align:start;background:none;border:0;padding:0;text-align:left;color:inherit;font:inherit;cursor:pointer}
+.tile.h{width:min(84vw,26rem)}
+.thumb{position:relative;aspect-ratio:9/16;border-radius:20px;overflow:hidden;background:var(--line)}
+.tile.h .thumb{aspect-ratio:16/9}
+.thumb img,.thumb video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.thumb video{opacity:0;transition:opacity .25s}
+.tile.live .thumb video{opacity:1}
+.play{position:absolute;z-index:2;left:.7rem;bottom:.7rem;width:2.75rem;height:2.75rem;border-radius:50%;background:var(--surface);display:grid;place-items:center}
+.play svg{width:.9rem;height:.9rem;fill:var(--accent);margin-left:2px}
+.tile p{margin:.6rem 0 0;font-size:.95rem;line-height:1.35;font-weight:500}
+.tile:focus-visible .thumb{outline:3px solid var(--accent);outline-offset:3px}
+footer{margin:3rem auto 2.5rem;max-width:76rem;padding:0 clamp(1.25rem,4vw,3rem)}
+footer .box{background:var(--lilac);border-radius:32px;padding:clamp(2rem,5vw,3.5rem)}
+footer h2{margin:0 0 .5rem;font-size:clamp(2rem,5.5vw,3.4rem);line-height:1.02;max-width:16ch}
+footer p{margin:0 0 1.5rem;font-size:1.05rem;color:var(--ink)}
+footer .links{display:flex;flex-wrap:wrap;gap:.6rem}
+footer .links a{display:inline-flex;align-items:center;min-height:48px;padding:0 1.3rem;border-radius:999px;background:var(--accent);color:var(--onaccent);text-decoration:none;font-weight:700}
+footer .links a.sec{background:var(--surface);color:var(--ink)}
+dialog{border:0;padding:0;background:transparent;max-width:none;max-height:none;width:100%;height:100%}
+dialog::backdrop{background:rgba(30,24,40,.88)}
+.stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 4rem) 1rem calc(env(safe-area-inset-bottom,0px) + 1.5rem)}
+.stage video{max-width:100%;max-height:100%;border-radius:18px;background:#000}
+.close{position:fixed;top:calc(env(safe-area-inset-top,0px) + .9rem);right:1rem;font:700 1rem "Manrope",sans-serif;background:#fff;color:#2B2533;border:0;border-radius:999px;min-height:44px;padding:0 1.1rem;cursor:pointer}
+.cap{position:fixed;top:calc(env(safe-area-inset-top,0px) + 1.4rem);left:1rem;right:8rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (prefers-reduced-motion:reduce){.thumb video{transition:none}}
+
+.loading{padding:30vh 0;text-align:center;color:var(--soft)}
+</style>
+</head>
+<body>
+<div class="wrap top">
+  <div class="me"><img id="foto" alt="" hidden><div><b id="nombre"></b><span id="rol"></span></div></div>
+  <a class="btn soft" id="topcta" hidden>Escribime</a>
+</div>
+<div class="loading" id="loading">Cargando…</div>
+<header class="hero" id="hero" hidden>
+  <div class="wrap in">
+    <div class="txt">
+      <h1 class="disp" id="frase"></h1>
+      <p id="intro"></p>
+      <button class="btn" id="herobtn">Ver videos</button>
+    </div>
+    <div class="reel" id="reel" aria-hidden="true"></div>
+  </div>
+</header>
+<nav class="cats" id="nav" aria-label="Rubros" hidden><div class="wrap" id="navin"></div></nav>
+<main class="wrap" id="main"></main>
+<footer id="foot" hidden>
+  <div class="box">
+    <h2 class="disp" id="cierreTitulo"></h2>
+    <p id="cierreTexto"></p>
+    <div class="links" id="links"></div>
+  </div>
+</footer>
+<dialog id="dlg" aria-label="Video">
+  <div class="cap" id="cap"></div>
+  <button class="close" id="close">Cerrar</button>
+  <div class="stage" id="stage"></div>
+</dialog>
+<script type="module">
+import { FIREBASE, SDK, ACENTOS, TONOS, TONOS_OSC, videoSrc, posterSrc, imgSrc, linksContacto } from "./config.js";
+const { initializeApp } = await import(SDK + "firebase-app.js");
+const { getFirestore, doc, getDoc } = await import(SDK + "firebase-firestore.js");
+
+const $ = s => document.querySelector(s);
+const el = (t, c, txt) => { const e = document.createElement(t); if (c) e.className = c; if (txt != null) e.textContent = txt; return e; };
+const playIcon = '<svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0l10 6-10 6z"/></svg>';
+const canHover = matchMedia("(hover: hover)").matches;
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+let S = null, CATS = [];
+
+function armar(data) {
+  return (data.categorias || []).map(c => {
+    const vids = (data.videos || []).filter(v => v.cat === c.id && v.url);
+    const marcas = [];
+    vids.forEach(v => { const n = (v.marca || "").trim() || "Otros"; let m = marcas.find(x => x.n === n); if (!m) marcas.push(m = { n, v: [] }); m.v.push(v); });
+    return { ...c, marcas, total: vids.length };
+  }).filter(c => c.total);
+}
+
+function tile(v) {
+  const b = el("button", "tile" + (v.h ? " h" : ""));
+  b.setAttribute("aria-label", "Ver video: " + (v.titulo || ""));
+  const th = el("div", "thumb");
+  const img = el("img"); img.src = posterSrc(v); img.alt = ""; img.loading = "lazy";
+  const p = el("span", "play"); p.innerHTML = playIcon;
+  th.append(img, p);
+  if (canHover && !reduce) {
+    let pv = null;
+    b.addEventListener("mouseenter", () => {
+      if (!pv) { pv = el("video"); pv.muted = true; pv.loop = true; pv.playsInline = true; pv.preload = "auto"; pv.src = videoSrc(v); th.insertBefore(pv, p); }
+      pv.play().then(() => b.classList.add("live")).catch(() => {});
+    });
+    b.addEventListener("mouseleave", () => { if (pv) { pv.pause(); b.classList.remove("live"); } });
+  }
+  b.append(th, el("p", null, v.titulo || ""));
+  b.onclick = () => abrir(v);
+  return b;
+}
+
+function seccion(c) {
+  const s = el("section", "cat"); s.id = "sec-" + c.id;
+  const hd = el("div", "head"); const dot = el("span", "dot"); dot.style.background = "var(--accent)";
+  hd.append(dot, el("h2", "disp", c.nombre)); s.append(hd);
+  c.marcas.forEach(m => {
+    const d = el("div", "brandrow"); d.append(el("h3", null, m.n));
+    const r = el("div", "row"); m.v.forEach(v => r.append(tile(v))); d.append(r); s.append(d);
+  });
+  return s;
+}
+
+function reel(list) {
+  const r = $("#reel"); r.replaceChildren();
+  list.forEach(v => {
+    const ph = el("div", "ph" + (v.h ? " h" : "")); const clip = el("div", "clip"); ph.append(clip);
+    const img = el("img"); img.src = posterSrc(v); img.alt = ""; clip.append(img);
+    if (!reduce) {
+      const vid = el("video"); vid.muted = true; vid.loop = true; vid.autoplay = true; vid.playsInline = true;
+      vid.setAttribute("muted", ""); vid.setAttribute("playsinline", ""); vid.preload = "auto"; vid.src = videoSrc(v);
+      clip.append(vid); vid.play().catch(() => {});
+    }
+    r.append(ph);
+  });
+}
+
+function elegirReel(shown, filtrado) {
+  const todos = shown.flatMap(c => c.marcas.flatMap(m => m.v));
+  const dest = filtrado ? [] : todos.filter(v => v.destacado);
+  const out = dest.slice(0, 3);
+  if (filtrado) shown[0].marcas.forEach(m => { const v = m.v.find(x => !x.h); if (v && out.length < 3) out.push(v); });
+  todos.forEach(v => { if (!v.h && out.length < 3 && !out.includes(v)) out.push(v); });
+  return out.length ? out : todos.slice(0, 1);
+}
+
+function render() {
+  const key = decodeURIComponent((location.hash || "").slice(1));
+  const only = CATS.find(c => c.id === key);
+  const shown = only ? [only] : CATS;
+  const main = $("#main"), navin = $("#navin");
+  main.replaceChildren(); navin.replaceChildren();
+  if (!CATS.length) { main.append(el("p", "loading", "Portfolio en preparación.")); $("#hero").hidden = true; return; }
+  $("#hero").hidden = false;
+  reel(elegirReel(shown, !!only));
+  $("#intro").textContent = S.intro || "";
+  if (only) { $("#nav").hidden = true; document.body.classList.remove("has-nav"); }
+  else {
+    $("#nav").hidden = CATS.length < 2; document.body.classList.toggle("has-nav", CATS.length > 1);
+    CATS.forEach(c => {
+      const b = el("button", null, c.nombre);
+      b.style.background = (dark ? TONOS_OSC : TONOS)[c.tono] || "var(--surface)";
+      b.onclick = () => document.getElementById("sec-" + c.id).scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+      navin.append(b);
+    });
+  }
+  shown.forEach(c => main.append(seccion(c)));
+  window.scrollTo(0, 0);
+}
+
+function contacto() {
+  const L = $("#links"); L.replaceChildren();
+  const lista = linksContacto(S.contacto || {});
+  lista.forEach((c, i) => {
+    const a = el("a", i ? "sec" : null, i === 0 && c.k === "whatsapp" ? "Escribir por WhatsApp" : c.t);
+    a.href = c.href; if (!/^(tel|mailto):/.test(c.href)) { a.target = "_blank"; a.rel = "noopener"; }
+    L.append(a);
+  });
+  $("#foot").hidden = !lista.length;
+  const t = $("#topcta");
+  if (lista.length) { t.href = lista[0].href; if (!/^(tel|mailto):/.test(lista[0].href)) { t.target = "_blank"; t.rel = "noopener"; } t.hidden = false; }
+}
+
+const dlg = $("#dlg");
+function abrir(v) {
+  const vid = el("video"); vid.src = videoSrc(v); vid.controls = true; vid.autoplay = true; vid.playsInline = true; vid.preload = "auto";
+  $("#stage").replaceChildren(vid); $("#cap").textContent = v.titulo || "";
+  dlg.showModal(); vid.play().catch(() => {});
+}
+function cerrar() { const v = $("#stage video"); if (v) { v.pause(); v.removeAttribute("src"); v.load(); } $("#stage").replaceChildren(); dlg.close(); }
+$("#close").onclick = cerrar;
+dlg.addEventListener("cancel", e => { e.preventDefault(); cerrar(); });
+$("#stage").addEventListener("click", e => { if (e.target.id === "stage") cerrar(); });
+$("#herobtn").onclick = () => $("#main").scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+
+try {
+  const db = getFirestore(initializeApp(FIREBASE));
+  const snap = await getDoc(doc(db, "publico", "sitio"));
+  S = snap.exists() ? snap.data() : null;
+} catch (e) { console.error(e); }
+$("#loading").hidden = true;
+if (!S) { $("#main").append(el("p", "loading", "Portfolio en preparación.")); }
+else {
+  document.documentElement.style.setProperty("--accent", ACENTOS[S.acento] || ACENTOS.violeta);
+  $("#nombre").textContent = S.nombre || ""; $("#rol").textContent = S.rol || "";
+  document.title = (S.nombre || "Portfolio") + " — Videos UGC para marcas";
+  if (S.foto) { const f = $("#foto"); f.src = imgSrc(S.foto, 160); f.alt = S.nombre || ""; f.hidden = false; }
+  $("#frase").textContent = S.frase || "";
+  $("#cierreTitulo").textContent = S.cierreTitulo || ""; $("#cierreTexto").textContent = S.cierreTexto || "";
+  CATS = armar(S);
+  render(); contacto();
+  window.addEventListener("hashchange", render);
+}
+</script>
+</body>
+</html>
