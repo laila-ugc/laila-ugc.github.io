@@ -87,6 +87,13 @@ dialog::backdrop{background:rgba(30,24,40,.88)}
 .redes{display:flex;flex-wrap:wrap;gap:.5rem;margin:-.4rem 0 1.5rem}
 .redes a{display:inline-flex;align-items:center;min-height:40px;padding:0 1rem;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--ink);text-decoration:none;font-weight:600;font-size:.92rem}
 .redes a:hover{border-color:var(--ink)}
+.filtros{display:flex;flex-direction:column;gap:.5rem;margin:.25rem 0 1.25rem}
+.chips{display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips button{flex:0 0 auto;min-height:40px;padding:0 1rem;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:600 .9rem "Manrope",sans-serif;cursor:pointer}
+.chips button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.badge{position:absolute;z-index:2;left:.6rem;top:.6rem;font-size:.72rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:#E6DCF8;color:#2B2533}
+.badge.produccion{background:#D3F1DE}
+.vacio{color:var(--soft);margin:.5rem 0}
 .loading{padding:30vh 0;text-align:center;color:var(--soft)}
 </style>
 </head>
@@ -149,6 +156,7 @@ function tile(v) {
   const img = el("img"); img.src = posterSrc(v); img.alt = ""; img.loading = "lazy";
   const p = el("span", "play"); p.innerHTML = playIcon;
   th.append(img, p);
+  if (v.tipo === "ugc" || v.tipo === "produccion") th.append(el("span", "badge " + v.tipo, v.tipo === "ugc" ? "UGC" : "Producción"));
   if (canHover && !reduce) {
     let pv = null;
     b.addEventListener("mouseenter", () => {
@@ -170,8 +178,24 @@ function seccion(c, abierto) {
   sm.insertAdjacentHTML("beforeend", '<svg class="chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6l5 5 5-5"/></svg>');
   d.append(sm);
   const body = el("div", "body"); let lleno = false;
-  const llenar = () => { if (lleno) return; lleno = true;
-    c.marcas.forEach(m => { const r0 = el("div", "brandrow"); r0.append(el("h3", null, m.n)); const r = el("div", "row"); m.v.forEach(v => r.append(tile(v))); r0.append(r); body.append(r0); }); };
+  const todos = c.marcas.flatMap(m => m.v);
+  const hayTipos = todos.some(v => v.tipo === "ugc") && todos.some(v => v.tipo === "produccion");
+  const conMarcas = c.marcas.length >= 4;
+  let fT = "", fM = "";
+  const filtros = el("div", "filtros"), lista = el("div");
+  const chipsDe = (opts, actual, fn) => { const w = el("div", "chips"); opts.forEach(([v, t]) => { const b = el("button", null, t); b.setAttribute("aria-pressed", String(v === actual)); b.onclick = () => fn(v); w.append(b); }); return w; };
+  const pintar = () => {
+    filtros.replaceChildren();
+    if (hayTipos) filtros.append(chipsDe([["", "Todo"], ["ugc", "UGC"], ["produccion", "Producción"]], fT, v => { fT = v; pintar(); }));
+    if (conMarcas) filtros.append(chipsDe([["", "Todas las marcas"], ...c.marcas.map(m => [m.n, m.n])], fM, v => { fM = v; pintar(); }));
+    lista.replaceChildren();
+    c.marcas.filter(m => !fM || m.n === fM).forEach(m => {
+      const vs = m.v.filter(v => !fT || v.tipo === fT); if (!vs.length) return;
+      const r0 = el("div", "brandrow"); r0.append(el("h3", null, m.n)); const r = el("div", "row"); vs.forEach(v => r.append(tile(v))); r0.append(r); lista.append(r0);
+    });
+    if (!lista.children.length) lista.append(el("p", "vacio", "No hay videos con ese filtro."));
+  };
+  const llenar = () => { if (lleno) return; lleno = true; if (hayTipos || conMarcas) body.append(filtros); body.append(lista); pintar(); };
   d.append(body);
   if (abierto) llenar();
   d.addEventListener("toggle", () => {

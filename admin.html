@@ -55,8 +55,10 @@ details.grp[open]>summary .chev{transform:rotate(90deg)}
 .vrow .acts{display:flex;gap:4px;flex:0 0 auto}
 .vrow .ck{width:24px;height:24px;flex:0 0 auto;accent-color:var(--accent)}
 body.sel .vrow{cursor:pointer}
-body.sel .toast{bottom:calc(240px + env(safe-area-inset-bottom,0px))}
-body.sel{padding-bottom:calc(230px + env(safe-area-inset-bottom,0px))}
+body.sel .toast{bottom:calc(300px + env(safe-area-inset-bottom,0px))}
+body.sel{padding-bottom:calc(290px + env(safe-area-inset-bottom,0px))}
+.tipo{display:inline-block;margin-left:6px;font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;background:#E6DCF8;color:#2B2533;vertical-align:1px}
+.tipo.produccion{background:#D3F1DE}
 .star{font-size:12px;font-weight:700;color:var(--accent)}
 nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
 nav.tabs .in{max-width:40rem;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
@@ -114,6 +116,7 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
         <div class="stack" style="padding:0 16px 16px">
           <label class="f">Rubro<select id="tCat"></select></label>
           <label class="f">Marca<input type="text" id="tMarca" list="marcas" placeholder="Ej: Soyana"></label>
+          <label class="f">Tipo<select id="tTipo"><option value="">Elegir después</option><option value="ugc">UGC</option><option value="produccion">Producción</option></select></label>
           <p class="hint" style="margin:0">Los videos que subas ahora entran con este rubro y esta marca. Después podés cambiarlos con “Editar”.</p>
         </div>
       </details>
@@ -124,7 +127,12 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
       <input type="file" id="fVideos" accept="video/*" multiple hidden>
       <p class="hint" style="text-align:center;margin:8px 0 0">Podés elegir varios a la vez. Máximo 100 MB cada uno.</p>
       <div class="card queue sec" id="queue" hidden></div>
-      <div style="display:flex;justify-content:flex-end;margin-top:16px"><button class="mini" id="selModo">Seleccionar varios</button></div>
+      <div class="card" style="padding:12px;margin-top:16px;display:flex;flex-direction:column;gap:10px">
+        <span class="hint" style="font-weight:700">Filtrar</span>
+        <div class="seg" id="fTipo"><button data-v="" aria-pressed="true">Todos</button><button data-v="ugc" aria-pressed="false">UGC</button><button data-v="produccion" aria-pressed="false">Producción</button><button data-v="sin" aria-pressed="false">Sin tipo</button></div>
+        <select id="fMarca" aria-label="Filtrar por marca"></select>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px"><span class="hint" id="fRes"></span><button class="mini" id="selModo">Seleccionar varios</button></div>
       <div class="stack" id="listaVideos" style="margin-top:10px"></div>
       <div id="selBar" hidden style="position:fixed;left:0;right:0;bottom:calc(60px + env(safe-area-inset-bottom,0px));z-index:19;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(0,0,0,.06)">
         <div class="wrap stack" style="padding-top:12px;padding-bottom:12px;gap:8px">
@@ -133,6 +141,7 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
             <select id="selCat" aria-label="Rubro"></select>
             <input type="text" id="selMarca" list="marcas" placeholder="Marca (opcional)" aria-label="Marca">
           </div>
+          <div class="seg" id="selTipo"><button data-v="" aria-pressed="true">Tipo igual</button><button data-v="ugc" aria-pressed="false">UGC</button><button data-v="produccion" aria-pressed="false">Producción</button></div>
           <div style="display:flex;gap:8px">
             <button class="btn" id="selAplicar" style="flex:1 1 auto">Aplicar</button>
             <button class="btn danger" id="selQuitar">Quitar</button>
@@ -242,6 +251,7 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
     <label class="f">Marca<input type="text" id="eMarca" list="marcas"></label>
     <datalist id="marcas"></datalist>
     <label class="f">Rubro<select id="eCat"></select></label>
+    <label class="f">Tipo<select id="eTipo"><option value="">Sin tipo</option><option value="ugc">UGC</option><option value="produccion">Producción</option></select></label>
     <label style="display:flex;align-items:center;gap:10px;font-size:15px;min-height:44px"><input type="checkbox" id="eDest" style="width:22px;height:22px"> Mostrar arriba en la página</label>
     <button class="btn full" value="ok">Guardar</button>
     <button class="btn danger full" type="button" id="eQuitar">Quitar video</button>
@@ -288,6 +298,16 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 const slug = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 30) || "rubro";
 const catDe = id => S.categorias.find(c => c.id === id);
 
+// Huella del contenido: tamaño + primer y último MB. Reconoce el mismo archivo aunque tenga otro nombre.
+async function huellaDe(f) {
+  try {
+    const MB = 1024 * 1024;
+    const partes = [f.slice(0, MB), f.slice(Math.max(0, f.size - MB))];
+    const buf = await new Blob(partes).arrayBuffer();
+    const h = await crypto.subtle.digest("SHA-256", buf);
+    return f.size + "-" + [...new Uint8Array(h)].slice(0, 12).map(b => b.toString(16).padStart(2, "0")).join("");
+  } catch { return ""; }
+}
 function subir(file, onp) {
   return new Promise((ok, mal) => {
     const fd = new FormData(); fd.append("file", file); fd.append("upload_preset", CLOUD.preset);
@@ -348,16 +368,22 @@ function pintarTodo() {
 
 // ---------- videos ----------
 const abiertos = new Set(["__primero"]);
-let modoSel = false; const sel = new Set();
+let modoSel = false; const sel = new Set(); let filtroTipo = "", filtroMarca = "", selTipo = "";
+const TIPO_TXT = { ugc: "UGC", produccion: "Producción" };
+const pasaFiltro = v => (!filtroTipo || (filtroTipo === "sin" ? !v.tipo : v.tipo === filtroTipo)) && (!filtroMarca || (v.marca || "") === filtroMarca);
 function pintarVideos() {
   const L = $("#listaVideos"); L.replaceChildren();
-  const grupos = S.categorias.map(c => ({ c, v: S.videos.filter(v => v.cat === c.id) }));
-  const sueltos = S.videos.filter(v => !catDe(v.cat));
+  const filtrando = !!(filtroTipo || filtroMarca);
+  const grupos = S.categorias.map(c => ({ c, v: S.videos.filter(v => v.cat === c.id && pasaFiltro(v)) })).filter(g => !filtrando || g.v.length);
+  const sueltos = S.videos.filter(v => !catDe(v.cat) && pasaFiltro(v));
+  const totalF = grupos.reduce((a, g) => a + g.v.length, 0) + sueltos.length;
+  $("#fRes").textContent = filtrando ? totalF + (totalF === 1 ? " video encontrado" : " videos encontrados") : "";
   if (sueltos.length) grupos.unshift({ c: { id: "__sin", nombre: "Sin rubro", tono: "durazno" }, v: sueltos });
   if (!S.videos.length) L.append(el("p", "hint", "Todavía no hay videos. Tocá “Agregar videos”."));
+  else if (filtrando && !totalF) L.append(el("p", "hint", "Ningún video coincide con el filtro."));
   grupos.forEach((g, gi) => {
     const d = el("details", "grp");
-    if (abiertos.has(g.c.id) || (abiertos.has("__primero") && gi === 0)) d.open = true;
+    if (filtrando || abiertos.has(g.c.id) || (abiertos.has("__primero") && gi === 0)) d.open = true;
     d.ontoggle = () => { abiertos.delete("__primero"); d.open ? abiertos.add(g.c.id) : abiertos.delete(g.c.id); };
     const s = el("summary"); const dot = el("span", "dot"); dot.style.background = TONOS[g.c.tono] || "#eee";
     s.append(dot, el("span", null, g.c.nombre), el("span", "n", String(g.v.length)));
@@ -373,6 +399,7 @@ function pintarVideos() {
       const im = el("img"); im.src = posterSrc(v); im.alt = ""; im.loading = "lazy";
       const t = el("div", "t"); t.append(el("b", null, v.titulo || "Sin título"), el("span", null, (v.marca || "Sin marca") + (v.destacado ? " · " : "")));
       if (v.destacado) t.lastChild.append(el("span", "star", "Arriba"));
+      if (v.tipo) t.lastChild.append(el("span", "tipo " + v.tipo, TIPO_TXT[v.tipo]));
       const a = el("div", "acts");
       const up = el("button", "mini", "↑"); up.setAttribute("aria-label", "Subir"); up.disabled = i === 0; up.onclick = () => mover(v, g.v, -1);
       const dn = el("button", "mini", "↓"); dn.setAttribute("aria-label", "Bajar"); dn.disabled = i === g.v.length - 1; dn.onclick = () => mover(v, g.v, 1);
@@ -392,11 +419,16 @@ function pintarVideos() {
   const t0 = el("option", null, "Elegir después"); t0.value = ""; tc.append(t0);
   S.categorias.forEach(c => { const o = el("option", null, c.nombre); o.value = c.id; tc.append(o); });
   tc.value = catDe(prevT) ? prevT : "";
-  const resumen = () => { const c = catDe(tc.value); const m = $("#tMarca").value.trim(); $("#tandaRes").textContent = c || m ? [c && c.nombre, m].filter(Boolean).join(", ") : "Opcional"; };
-  tc.onchange = resumen; $("#tMarca").oninput = resumen; resumen();
+  const resumen = () => { const c = catDe(tc.value); const m = $("#tMarca").value.trim(); const t = TIPO_TXT[$("#tTipo").value]; const partes = [c && c.nombre, m, t].filter(Boolean); $("#tandaRes").textContent = partes.length ? partes.join(", ") : "Opcional"; };
+  tc.onchange = resumen; $("#tMarca").oninput = resumen; $("#tTipo").onchange = resumen; resumen();
   barraSel();
   const dl = $("#marcas"); dl.replaceChildren();
-  [...new Set(S.videos.map(v => v.marca).filter(Boolean))].forEach(m => { const o = el("option"); o.value = m; dl.append(o); });
+  const marcasL = [...new Set(S.videos.map(v => v.marca).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  marcasL.forEach(m => { const o = el("option"); o.value = m; dl.append(o); });
+  const fm = $("#fMarca"); fm.replaceChildren(); const fo = el("option", null, "Todas las marcas"); fo.value = ""; fm.append(fo);
+  marcasL.forEach(m => { const o = el("option", null, m); o.value = m; fm.append(o); });
+  if (filtroMarca && !marcasL.includes(filtroMarca)) filtroMarca = "";
+  fm.value = filtroMarca;
 }
 function barraSel() {
   [...sel].forEach(id => { if (!S.videos.some(v => v.id === id)) sel.delete(id); });
@@ -408,14 +440,17 @@ function barraSel() {
   S.categorias.forEach(c => { const o = el("option", null, c.nombre); o.value = c.id; sc.append(o); });
   sc.value = catDe(pv) ? pv : "";
 }
+$("#fTipo").querySelectorAll("button").forEach(b => b.onclick = () => { $("#fTipo").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", "false")); b.setAttribute("aria-pressed", "true"); filtroTipo = b.dataset.v; pintarVideos(); });
+$("#fMarca").onchange = e => { filtroMarca = e.target.value; pintarVideos(); };
+$("#selTipo").querySelectorAll("button").forEach(b => b.onclick = () => { $("#selTipo").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", "false")); b.setAttribute("aria-pressed", "true"); selTipo = b.dataset.v; });
 $("#selModo").onclick = () => { modoSel = !modoSel; sel.clear(); $("#selModo").textContent = modoSel ? "Listo" : "Seleccionar varios"; pintarVideos(); };
 $("#selAplicar").onclick = () => {
-  const cat = $("#selCat").value, marca = $("#selMarca").value.trim();
-  if (!cat && !marca) { toast("Elegí un rubro o escribí una marca"); return; }
+  const cat = $("#selCat").value, marca = $("#selMarca").value.trim(), tipo = selTipo;
+  if (!cat && !marca && !tipo) { toast("Elegí un rubro, una marca o un tipo"); return; }
   const n = sel.size;
-  S.videos.forEach(v => { if (sel.has(v.id)) { if (cat) v.cat = cat; if (marca) v.marca = marca; } });
+  S.videos.forEach(v => { if (sel.has(v.id)) { if (cat) v.cat = cat; if (marca) v.marca = marca; if (tipo) v.tipo = tipo; } });
   if (cat) abiertos.add(cat);
-  sel.clear(); $("#selMarca").value = ""; pintarVideos(); guardar(true);
+  sel.clear(); $("#selMarca").value = ""; selTipo = ""; $("#selTipo").querySelectorAll("button").forEach((x, i) => x.setAttribute("aria-pressed", String(i === 0))); pintarVideos(); guardar(true);
   toast(n + (n === 1 ? " video actualizado" : " videos actualizados"));
 };
 $("#selQuitar").onclick = () => {
@@ -437,7 +472,8 @@ $("#fVideos").onchange = async e => {
   for (const r of filas) {
     if (r.f.size > 100 * 1024 * 1024) { r.st.textContent = "Muy pesado (máx. 100 MB)"; r.st.className = "err"; continue; }
     const base0 = r.f.name.replace(/\.[^.]+$/, "").toLowerCase(), k0 = CONOCIDOS[base0];
-    const repe = S.videos.find(v => (v.archivo === r.f.name && v.peso === r.f.size) || (k0 && v.titulo === k0[2] && v.marca === k0[1]));
+    const huella = await huellaDe(r.f);
+    const repe = S.videos.find(v => (v.huella && v.huella === huella) || (v.archivo === r.f.name && v.peso === r.f.size) || (k0 && v.titulo === k0[2] && v.marca === k0[1]));
     if (repe && !confirm("“" + r.f.name + "” ya está en el portfolio. ¿Subirlo igual?")) { r.st.textContent = "Ya estaba, no se subió"; r.st.className = "hint"; r.i.style.width = "0"; continue; }
     r.st.textContent = "Subiendo";
     try {
@@ -445,8 +481,8 @@ $("#fVideos").onchange = async e => {
       const base = r.f.name.replace(/\.[^.]+$/, "").toLowerCase();
       const k = CONOCIDOS[base];
       const tCat = catDe($("#tCat").value) ? $("#tCat").value : "", tMarca = $("#tMarca").value.trim();
-      const cat = tCat || (k ? k[0] : ""), marca = tMarca || (k ? k[1] : "");
-      S.videos.push({ id: uid(), url: res.secure_url, h: res.width > res.height, titulo: k ? k[2] : r.f.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim(), marca, cat, destacado: false, portada: "", archivo: r.f.name, peso: r.f.size });
+      const cat = tCat || (k ? k[0] : ""), marca = tMarca || (k ? k[1] : ""), tipo = $("#tTipo").value;
+      S.videos.push({ id: uid(), url: res.secure_url, h: res.width > res.height, titulo: k ? k[2] : r.f.name.replace(/\.[^.]+$/, "").replace(/[_-]+/g, " ").trim(), marca, cat, destacado: false, portada: "", archivo: r.f.name, peso: r.f.size, huella, tipo });
       r.i.style.width = "100%"; r.st.textContent = "Listo"; r.st.className = "ok";
       abiertos.add(cat || "__sin");
       pintarVideos(); guardar(true);
@@ -460,7 +496,7 @@ $("#fVideos").onchange = async e => {
 let enEdicion = null;
 function editar(v) {
   enEdicion = v;
-  $("#eImg").src = posterSrc(v); $("#eTitulo").value = v.titulo || ""; $("#eMarca").value = v.marca || ""; $("#eDest").checked = !!v.destacado;
+  $("#eImg").src = posterSrc(v); $("#eTitulo").value = v.titulo || ""; $("#eMarca").value = v.marca || ""; $("#eDest").checked = !!v.destacado; $("#eTipo").value = v.tipo || "";
   const s = $("#eCat"); s.replaceChildren();
   const o0 = el("option", null, "Elegí un rubro"); o0.value = ""; s.append(o0);
   S.categorias.forEach(c => { const o = el("option", null, c.nombre); o.value = c.id; s.append(o); });
@@ -469,7 +505,7 @@ function editar(v) {
 }
 $("#dEdit").addEventListener("close", () => {
   const v = enEdicion; if (!v || $("#dEdit").returnValue !== "ok") return;
-  v.titulo = $("#eTitulo").value.trim(); v.marca = $("#eMarca").value.trim(); v.cat = $("#eCat").value; v.destacado = $("#eDest").checked;
+  v.titulo = $("#eTitulo").value.trim(); v.marca = $("#eMarca").value.trim(); v.cat = $("#eCat").value; v.destacado = $("#eDest").checked; v.tipo = $("#eTipo").value;
   if (v.cat) abiertos.add(v.cat);
   pintarVideos(); guardar(true);
 });
