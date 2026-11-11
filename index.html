@@ -99,6 +99,8 @@ dialog::backdrop{background:rgba(30,24,40,.88)}
 .filtros{display:flex;flex-direction:column;gap:.5rem;margin:.25rem 0 1.25rem}
 .chips{display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .chips button{flex:0 0 auto;min-height:40px;padding:0 1rem;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:600 .9rem "Manrope",sans-serif;cursor:pointer}
+.chips.grande{margin:.25rem 0 .75rem;flex-wrap:wrap;overflow:visible}
+.chips.grande button{min-height:46px;padding:0 1.25rem;font-size:.98rem;background:var(--surface)}
 .chips button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
 .badge{position:absolute;z-index:2;left:.6rem;top:.6rem;font-size:.72rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:#E6DCF8;color:#2B2533}
 .badge.produccion{background:#D3F1DE}
@@ -127,6 +129,7 @@ dialog::backdrop{background:rgba(30,24,40,.88)}
     <button class="flecha der" id="carDer" aria-label="Siguientes"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg></button>
   </div>
 </header>
+<div class="wrap" id="filtroG" hidden><div class="chips grande" id="filtroGin" role="group" aria-label="Tipo de contenido"></div></div>
 <main class="wrap" id="main"></main>
 <footer id="foot" hidden>
   <div class="box">
@@ -151,11 +154,11 @@ const playIcon = '<svg viewBox="0 0 10 12" aria-hidden="true"><path d="M0 0l10 6
 const canHover = matchMedia("(hover: hover)").matches;
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const dark = false; // la página es siempre clara
-let S = null, CATS = [];
+let S = null, CATS = [], TIPO = "";
 
 function armar(data) {
   return (data.categorias || []).map(c => {
-    const vids = (data.videos || []).filter(v => v.cat === c.id && v.url);
+    const vids = (data.videos || []).filter(v => v.cat === c.id && v.url && (!TIPO || v.tipo === TIPO));
     const marcas = [];
     vids.forEach(v => { const n = (v.marca || "").trim() || "Otros"; let m = marcas.find(x => x.n === n); if (!m) marcas.push(m = { n, v: [] }); m.v.push(v); });
     return { ...c, marcas, total: vids.length };
@@ -169,7 +172,7 @@ function tile(v) {
   const img = el("img"); img.src = posterSrc(v); img.alt = ""; img.loading = "lazy";
   const p = el("span", "play"); p.innerHTML = playIcon;
   th.append(img, p);
-  if (v.tipo === "ugc" || v.tipo === "produccion") th.append(el("span", "badge " + v.tipo, v.tipo === "ugc" ? "UGC" : "Producción"));
+  if (v.tipo === "ugc" || v.tipo === "produccion") th.append(el("span", "badge " + v.tipo, v.tipo === "ugc" ? "UGC" : "Creación de contenido"));
   if (canHover && !reduce) {
     let pv = null;
     b.addEventListener("mouseenter", () => {
@@ -192,14 +195,14 @@ function seccion(c, abierto) {
   d.append(sm);
   const body = el("div", "body"); let lleno = false;
   const todos = c.marcas.flatMap(m => m.v);
-  const hayTipos = todos.some(v => v.tipo === "ugc") && todos.some(v => v.tipo === "produccion");
+  const hayTipos = false; // el filtro de tipo ahora es general, arriba de los rubros
   const conMarcas = c.marcas.length >= 4;
   let fT = "", fM = "";
   const filtros = el("div", "filtros"), lista = el("div");
   const chipsDe = (opts, actual, fn) => { const w = el("div", "chips"); opts.forEach(([v, t]) => { const b = el("button", null, t); b.setAttribute("aria-pressed", String(v === actual)); b.onclick = () => fn(v); w.append(b); }); return w; };
   const pintar = () => {
     filtros.replaceChildren();
-    if (hayTipos) filtros.append(chipsDe([["", "Todo"], ["ugc", "UGC"], ["produccion", "Producción"]], fT, v => { fT = v; pintar(); }));
+    if (hayTipos) filtros.append(chipsDe([["", "Todo"], ["ugc", "UGC"], ["produccion", "Creación de contenido"]], fT, v => { fT = v; pintar(); }));
     if (conMarcas) filtros.append(chipsDe([["", "Todas las marcas"], ...c.marcas.map(m => [m.n, m.n])], fM, v => { fM = v; pintar(); }));
     lista.replaceChildren();
     c.marcas.filter(m => !fM || m.n === fM).forEach(m => {
@@ -259,11 +262,24 @@ function elegirReel(shown, filtrado) {
   return out.slice(0, 14);
 }
 
-function render() {
+function filtroGeneral() {
+  const vs = (S.videos || []).filter(v => v.url && (S.categorias || []).some(c => c.id === v.cat));
+  const hay = vs.some(v => v.tipo === "ugc" || v.tipo === "produccion");
+  $("#filtroG").hidden = !hay;
+  const box = $("#filtroGin"); box.replaceChildren();
+  if (!hay) return;
+  [["", "Todo"], ["ugc", "UGC"], ["produccion", "Creación de contenido"]].forEach(([v, t]) => {
+    const b = el("button", null, t); b.setAttribute("aria-pressed", String(TIPO === v));
+    b.onclick = () => { TIPO = v; CATS = armar(S); filtroGeneral(); render(true); };
+    box.append(b);
+  });
+}
+function render(mantenerScroll) {
   const key = decodeURIComponent((location.hash || "").slice(1));
   const only = CATS.find(c => c.id === key);
   const shown = only ? [only] : CATS;
   const main = $("#main"); main.replaceChildren();
+  if (!CATS.length && TIPO) { main.append(el("p", "vacio", "Todavía no hay videos de este tipo.")); return; }
   if (!CATS.length) { main.append(el("p", "loading", "Portfolio en preparación.")); $("#hero").hidden = true; return; }
   $("#hero").hidden = false;
   reel(elegirReel(shown, !!only));
@@ -271,7 +287,7 @@ function render() {
   const box = el("div", "cats"); box.id = "cats";
   shown.forEach(c => box.append(seccion(c, !!only)));
   main.append(box);
-  window.scrollTo(0, 0);
+  if (!mantenerScroll) window.scrollTo(0, 0);
 }
 
 function contacto() {
@@ -319,8 +335,8 @@ else {
   $("#frase").textContent = S.frase || "";
   $("#cierreTitulo").textContent = S.cierreTitulo || ""; $("#cierreTexto").textContent = S.cierreTexto || "";
   CATS = armar(S);
-  render(); contacto();
-  window.addEventListener("hashchange", render);
+  filtroGeneral(); render(); contacto();
+  window.addEventListener("hashchange", () => render());
 }
 </script>
 </body>

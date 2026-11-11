@@ -86,8 +86,8 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
 .pick button img{width:100%;height:100%;object-fit:cover;display:block}
 .pick button[aria-pressed=true]{border-color:var(--accent)}
 .pick button span{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:700;display:grid;place-items:center}
-.seg{display:flex;gap:6px}
-.seg button{flex:1 1 0;min-height:44px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px "Manrope",sans-serif;cursor:pointer}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{flex:1 1 auto;padding:0 12px;min-height:44px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px "Manrope",sans-serif;cursor:pointer}
 .seg button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
 #prev{width:100%;max-width:320px;border-radius:14px;display:block;margin:0 auto;box-shadow:0 8px 30px rgba(0,0,0,.12)}
 .foto{width:72px;height:72px;border-radius:50%;object-fit:cover;background:var(--line)}
@@ -116,7 +116,7 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
         <div class="stack" style="padding:0 16px 16px">
           <label class="f">Rubro<select id="tCat"></select></label>
           <label class="f">Marca<input type="text" id="tMarca" list="marcas" placeholder="Ej: Soyana"></label>
-          <label class="f">Tipo<select id="tTipo"><option value="">Elegir después</option><option value="ugc">UGC</option><option value="produccion">Producción</option></select></label>
+          <label class="f">Tipo<select id="tTipo"><option value="">Elegir después</option><option value="ugc">UGC</option><option value="produccion">Creación de contenido</option></select></label>
           <p class="hint" style="margin:0">Los videos que subas ahora entran con este rubro y esta marca. Después podés cambiarlos con “Editar”.</p>
         </div>
       </details>
@@ -129,7 +129,7 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
       <div class="card queue sec" id="queue" hidden></div>
       <div class="card" style="padding:12px;margin-top:16px;display:flex;flex-direction:column;gap:10px">
         <span class="hint" style="font-weight:700">Filtrar</span>
-        <div class="seg" id="fTipo"><button data-v="" aria-pressed="true">Todos</button><button data-v="ugc" aria-pressed="false">UGC</button><button data-v="produccion" aria-pressed="false">Producción</button><button data-v="sin" aria-pressed="false">Sin tipo</button></div>
+        <div class="seg" id="fTipo"><button data-v="" aria-pressed="true">Todos</button><button data-v="ugc" aria-pressed="false">UGC</button><button data-v="produccion" aria-pressed="false">Creación de contenido</button><button data-v="sin" aria-pressed="false">Sin tipo</button></div>
         <select id="fMarca" aria-label="Filtrar por marca"></select>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px"><span class="hint" id="fRes"></span><button class="mini" id="selModo">Seleccionar varios</button></div>
@@ -141,7 +141,7 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
             <select id="selCat" aria-label="Rubro"></select>
             <input type="text" id="selMarca" list="marcas" placeholder="Marca (opcional)" aria-label="Marca">
           </div>
-          <div class="seg" id="selTipo"><button data-v="" aria-pressed="true">Tipo igual</button><button data-v="ugc" aria-pressed="false">UGC</button><button data-v="produccion" aria-pressed="false">Producción</button></div>
+          <div class="seg" id="selTipo"><button data-v="" aria-pressed="true">Tipo igual</button><button data-v="ugc" aria-pressed="false">UGC</button><button data-v="produccion" aria-pressed="false">Creación de contenido</button></div>
           <div style="display:flex;gap:8px">
             <button class="btn" id="selAplicar" style="flex:1 1 auto">Aplicar</button>
             <button class="btn danger" id="selQuitar">Quitar</button>
@@ -251,7 +251,7 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
     <label class="f">Marca<input type="text" id="eMarca" list="marcas"></label>
     <datalist id="marcas"></datalist>
     <label class="f">Rubro<select id="eCat"></select></label>
-    <label class="f">Tipo<select id="eTipo"><option value="">Sin tipo</option><option value="ugc">UGC</option><option value="produccion">Producción</option></select></label>
+    <label class="f">Tipo<select id="eTipo"><option value="">Sin tipo</option><option value="ugc">UGC</option><option value="produccion">Creación de contenido</option></select></label>
     <label style="display:flex;align-items:center;gap:10px;font-size:15px;min-height:44px"><input type="checkbox" id="eDest" style="width:22px;height:22px"> Mostrar arriba en la página</label>
     <button class="btn full" value="ok">Guardar</button>
     <button class="btn danger full" type="button" id="eQuitar">Quitar video</button>
@@ -369,7 +369,7 @@ function pintarTodo() {
 // ---------- videos ----------
 const abiertos = new Set(["__primero"]);
 let modoSel = false; const sel = new Set(); let filtroTipo = "", filtroMarca = "", selTipo = "";
-const TIPO_TXT = { ugc: "UGC", produccion: "Producción" };
+const TIPO_TXT = { ugc: "UGC", produccion: "Creación de contenido" };
 const pasaFiltro = v => (!filtroTipo || (filtroTipo === "sin" ? !v.tipo : v.tipo === filtroTipo)) && (!filtroMarca || (v.marca || "") === filtroMarca);
 function pintarVideos() {
   const L = $("#listaVideos"); L.replaceChildren();
