@@ -34,16 +34,25 @@ body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.55 "Manrope"
 .btn.soft{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
 .hero{padding:clamp(1rem,4vw,3rem) 0 clamp(1.5rem,4vw,3rem)}
 .hero .in{display:flex;flex-wrap:wrap;align-items:center;gap:1.75rem 3rem}
-.hero .txt{flex:1 1 24rem;min-width:0}
+.hero .txt{flex:1 1 100%;min-width:0;max-width:44rem}
 .hero h1{margin:0;font-size:clamp(2.2rem,8.5vw,4.8rem);line-height:1.02;max-width:13ch}
 .hero p{margin:1.1rem 0 1.6rem;font-size:clamp(1.05rem,2vw,1.2rem);max-width:30rem;color:var(--soft)}
-.reel{flex:1 1 20rem;width:100%;max-width:34rem;display:flex;justify-content:center;align-items:flex-end;gap:clamp(.5rem,1.5vw,1rem);min-width:0}
-.reel .ph{position:relative;flex:1 1 0;min-width:0;max-width:10.5rem;aspect-ratio:9/16;border-radius:22px;padding:6px;background:var(--butter)}
-.reel .ph:nth-child(2){flex-grow:1.25;max-width:13rem;background:var(--lilac)}
-.reel .ph:nth-child(3){background:var(--mint)}
-.reel .ph.h{aspect-ratio:16/9;flex:1 1 100%;max-width:26rem}
-.reel .ph .clip{position:absolute;inset:6px;border-radius:17px;overflow:hidden;background:#000}
-.reel video,.reel img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.car{position:relative;margin-top:clamp(1.5rem,4vw,2.5rem)}
+.car .track{display:flex;gap:clamp(.6rem,1.5vw,1rem);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:.25rem max(clamp(1.25rem,4vw,3rem),calc((100vw - 76rem) / 2 + 3rem)) .75rem;scroll-padding-inline:max(clamp(1.25rem,4vw,3rem),calc((100vw - 76rem) / 2 + 3rem))}
+.car .track::-webkit-scrollbar{display:none}
+.car .ph{position:relative;flex:0 0 clamp(8.5rem,36vw,10.5rem);aspect-ratio:9/16;border-radius:24px;padding:6px;border:0;cursor:pointer;scroll-snap-align:start;background:var(--butter)}
+.car .ph:nth-child(5n+2){background:var(--lilac)}.car .ph:nth-child(5n+3){background:var(--mint)}.car .ph:nth-child(5n+4){background:var(--blush)}.car .ph:nth-child(5n+5){background:var(--sky)}
+.car .ph.h{flex-basis:clamp(16rem,64vw,19rem);aspect-ratio:16/9;align-self:center}
+.car .clip{position:absolute;inset:6px;border-radius:18px;overflow:hidden;background:#000}
+.car video,.car img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.car video{opacity:0;transition:opacity .4s}.car .ph.live video{opacity:1}
+.car .ph .t{position:absolute;left:12px;right:12px;bottom:12px;z-index:2;color:#fff;font-size:.8rem;font-weight:700;text-shadow:0 1px 6px rgba(0,0,0,.6);text-align:left;line-height:1.2}
+.car .ph:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.flecha{position:absolute;top:50%;z-index:3;width:48px;height:48px;margin-top:-30px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.08)}
+.flecha svg{width:18px;height:18px;stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round}
+.flecha.izq{left:max(.5rem,calc((100vw - 76rem) / 2 + .5rem))}.flecha.der{right:max(.5rem,calc((100vw - 76rem) / 2 + .5rem))}
+@media (hover:hover) and (min-width:700px){.flecha{display:flex}}
+@media (prefers-reduced-motion:reduce){.car video{transition:none}}
 .cats{display:flex;flex-direction:column;gap:.75rem;padding:.5rem 0 1rem}
 details.cat{scroll-margin-top:12px;background:var(--surface);border:1px solid var(--line);border-radius:22px;overflow:hidden}
 details.cat>summary{list-style:none;display:flex;align-items:center;gap:.8rem;min-height:64px;padding:.75rem 1.25rem;cursor:pointer}
@@ -111,7 +120,11 @@ dialog::backdrop{background:rgba(30,24,40,.88)}
       <div class="redes" id="redes" hidden></div>
       <button class="btn" id="herobtn">Ver videos</button>
     </div>
-    <div class="reel" id="reel" aria-hidden="true"></div>
+  </div>
+  <div class="car" id="car">
+    <button class="flecha izq" id="carIzq" aria-label="Anteriores"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg></button>
+    <div class="track" id="reel" aria-label="Videos destacados"></div>
+    <button class="flecha der" id="carDer" aria-label="Siguientes"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg></button>
   </div>
 </header>
 <main class="wrap" id="main"></main>
@@ -128,7 +141,7 @@ dialog::backdrop{background:rgba(30,24,40,.88)}
   <div class="stage" id="stage"></div>
 </dialog>
 <script type="module">
-import { FIREBASE, SDK, ACENTOS, TONOS, TONOS_OSC, videoSrc, posterSrc, imgSrc, linksContacto } from "./config.js";
+import { FIREBASE, SDK, ACENTOS, TONOS, TONOS_OSC, videoSrc, posterSrc, imgSrc, linksContacto, cl } from "./config.js";
 const { initializeApp } = await import(SDK + "firebase-app.js");
 const { getFirestore, doc, getDoc } = await import(SDK + "firebase-firestore.js");
 
@@ -206,27 +219,44 @@ function seccion(c, abierto) {
   return d;
 }
 
+// Vista previa liviana para el carrusel: 360 px, sin audio, primeros 8 segundos
+const previa = v => cl(v.url, "c_limit,w_360,q_auto:low,ac_none,eo_8", "mp4");
+let carTimer = null, carPausa = 0, carObs = null;
 function reel(list) {
   const r = $("#reel"); r.replaceChildren();
+  if (carObs) carObs.disconnect();
+  carObs = "IntersectionObserver" in window ? new IntersectionObserver(es => es.forEach(e => {
+    const ph = e.target, vid = ph.querySelector("video");
+    if (e.isIntersecting && e.intersectionRatio > 0.6) {
+      if (!vid && !reduce) { const v = el("video"); v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute("muted", ""); v.setAttribute("playsinline", ""); v.preload = "auto"; v.src = ph.dataset.src; v.addEventListener("playing", () => ph.classList.add("live")); ph.querySelector(".clip").append(v); v.play().catch(() => {}); }
+      else if (vid) vid.play().catch(() => {});
+    } else if (vid) vid.pause();
+  }), { threshold: [0, 0.6, 1] }) : null;
   list.forEach(v => {
-    const ph = el("div", "ph" + (v.h ? " h" : "")); const clip = el("div", "clip"); ph.append(clip);
-    const img = el("img"); img.src = posterSrc(v); img.alt = ""; clip.append(img);
-    if (!reduce) {
-      const vid = el("video"); vid.muted = true; vid.loop = true; vid.autoplay = true; vid.playsInline = true;
-      vid.setAttribute("muted", ""); vid.setAttribute("playsinline", ""); vid.preload = "auto"; vid.src = videoSrc(v);
-      clip.append(vid); vid.play().catch(() => {});
-    }
-    r.append(ph);
+    const ph = el("button", "ph" + (v.h ? " h" : "")); ph.dataset.src = previa(v);
+    ph.setAttribute("aria-label", "Ver video: " + (v.titulo || v.marca || ""));
+    const clip = el("div", "clip"); const img = el("img"); img.src = posterSrc(v); img.alt = ""; img.loading = "lazy"; clip.append(img); ph.append(clip);
+    if (v.marca) ph.append(el("span", "t", v.marca));
+    ph.onclick = () => abrir(v);
+    r.append(ph); if (carObs) carObs.observe(ph);
   });
+  const paso = dir => { const it = r.querySelector(".ph"); if (!it) return; const w = it.getBoundingClientRect().width + parseFloat(getComputedStyle(r).columnGap || 12);
+    const fin = r.scrollLeft + r.clientWidth >= r.scrollWidth - 4;
+    if (dir > 0 && fin) r.scrollTo({ left: 0, behavior: "smooth" }); else r.scrollBy({ left: dir * w, behavior: reduce ? "auto" : "smooth" }); };
+  $("#carIzq").onclick = () => { carPausa = Date.now(); paso(-1); };
+  $("#carDer").onclick = () => { carPausa = Date.now(); paso(1); };
+  ["pointerdown", "wheel", "touchstart", "mouseenter"].forEach(ev => r.addEventListener(ev, () => carPausa = Date.now(), { passive: true }));
+  clearInterval(carTimer);
+  if (!reduce && list.length > 2) carTimer = setInterval(() => { if (document.hidden || Date.now() - carPausa < 6000 || dlg.open) return; paso(1); }, 3200);
 }
 
 function elegirReel(shown, filtrado) {
   const todos = shown.flatMap(c => c.marcas.flatMap(m => m.v));
-  const dest = filtrado ? [] : todos.filter(v => v.destacado);
-  const out = dest.slice(0, 3);
-  if (filtrado) shown[0].marcas.forEach(m => { const v = m.v.find(x => !x.h); if (v && out.length < 3) out.push(v); });
-  todos.forEach(v => { if (!v.h && out.length < 3 && !out.includes(v)) out.push(v); });
-  return out.length ? out : todos.slice(0, 1);
+  const out = filtrado ? [] : todos.filter(v => v.destacado);
+  // uno por marca primero, después el resto
+  shown.forEach(c => c.marcas.forEach(m => { const v = m.v.find(x => !out.includes(x)); if (v) out.push(v); }));
+  todos.forEach(v => { if (!out.includes(v)) out.push(v); });
+  return out.slice(0, 14);
 }
 
 function render() {
