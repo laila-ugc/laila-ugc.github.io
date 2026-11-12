@@ -33,6 +33,8 @@ header.bar{display:flex;align-items:center;justify-content:space-between;gap:12p
 .btn:disabled{opacity:.5;cursor:default}
 .mini{min-height:40px;min-width:40px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 13px "Manrope",sans-serif;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
 .mini:disabled{opacity:.35}
+.selFila{display:flex;flex-direction:column;gap:8px}
+@media (min-width:700px){.selFila{flex-direction:row}.selFila .seg{flex:1 1 0}}
 .mini[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
 .stack{display:flex;flex-direction:column;gap:12px}
@@ -144,8 +146,10 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
             <select id="selCat" aria-label="Rubro"></select>
             <input type="text" id="selMarca" list="marcas" placeholder="Marca (opcional)" aria-label="Marca">
           </div>
+          <div class="selFila">
           <div class="seg" id="selCar"><button data-v="" aria-pressed="true">Carrusel igual</button><button data-v="si" aria-pressed="false">Poner en carrusel</button><button data-v="no" aria-pressed="false">Sacar</button></div>
           <div class="seg" id="selTipo"><button data-v="" aria-pressed="true">Tipo igual</button><button data-v="ugc" aria-pressed="false">UGC</button><button data-v="produccion" aria-pressed="false">Creación de contenido</button></div>
+          </div>
           <div style="display:flex;gap:8px">
             <button class="btn" id="selAplicar" style="flex:1 1 auto">Aplicar</button>
             <button class="btn danger" id="selQuitar">Quitar</button>
