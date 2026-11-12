@@ -43,20 +43,20 @@ body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.55 "Manrope"
 .hero .txt{flex:1 1 100%;min-width:0;max-width:44rem}
 .hero h1{margin:0;font-size:clamp(1.8rem,5.2vw,3.1rem);line-height:1.12;max-width:22ch}
 .hero p{margin:1.1rem 0 1.6rem;font-size:clamp(1.05rem,2vw,1.2rem);max-width:30rem;color:var(--soft)}
-.car{position:relative;margin-top:1rem}
-.car .track{display:flex;gap:clamp(.6rem,1.5vw,1rem);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:.25rem max(clamp(1.25rem,4vw,3rem),calc((100vw - 76rem) / 2 + 3rem)) .75rem;scroll-padding-inline:max(clamp(1.25rem,4vw,3rem),calc((100vw - 76rem) / 2 + 3rem))}
+.car{position:relative;width:min(100% - 2.5rem,70rem);margin:1rem auto 0}
+.car .track{--g:clamp(.5rem,1.5vw,1rem);display:flex;align-items:center;gap:var(--g);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:.25rem 2px .75rem;scroll-padding-inline:2px}
 .car .track::-webkit-scrollbar{display:none}
-.car .ph{box-shadow:0 0 0 2px var(--surface);position:relative;flex:0 0 clamp(8.5rem,36vw,10.5rem);aspect-ratio:9/16;border-radius:24px;padding:6px;border:0;cursor:pointer;scroll-snap-align:start;background:var(--butter)}
+.car .ph{box-shadow:0 0 0 2px var(--surface);position:relative;flex:0 0 calc((100% - 3 * var(--g) - 4px) / 4);min-width:0;aspect-ratio:9/16;border-radius:clamp(12px,2.2vw,24px);padding:clamp(3px,.6vw,6px);border:0;cursor:pointer;scroll-snap-align:start;background:var(--butter)}
 .car .ph:nth-child(5n+2){background:var(--lilac)}.car .ph:nth-child(5n+3){background:var(--mint)}.car .ph:nth-child(5n+4){background:var(--blush)}.car .ph:nth-child(5n+5){background:var(--sky)}
-.car .ph.h{flex-basis:clamp(16rem,64vw,19rem);aspect-ratio:16/9;align-self:center}
-.car .clip{position:absolute;inset:6px;border-radius:18px;overflow:hidden;background:#000}
+.car .ph.h{flex-basis:calc((100% - 3 * var(--g) - 4px) / 2 + var(--g));aspect-ratio:16/9}
+.car .clip{position:absolute;inset:clamp(3px,.6vw,6px);border-radius:clamp(9px,1.8vw,19px);overflow:hidden;background:#000}
 .car video,.car img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .car video{opacity:0;transition:opacity .4s}.car .ph.live video{opacity:1}
-.car .ph .t{position:absolute;left:12px;right:12px;bottom:12px;z-index:2;color:#fff;font-size:.8rem;font-weight:700;text-shadow:0 1px 6px rgba(0,0,0,.6);text-align:left;line-height:1.2}
+.car .ph .t{position:absolute;left:clamp(6px,1.2vw,12px);right:clamp(6px,1.2vw,12px);bottom:clamp(6px,1.2vw,12px);z-index:2;color:#fff;font-size:clamp(.55rem,1.6vw,.8rem);font-weight:700;text-shadow:0 1px 6px rgba(0,0,0,.6);text-align:left;line-height:1.2}
 .car .ph:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .flecha{position:absolute;top:50%;z-index:3;width:48px;height:48px;margin-top:-30px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.08)}
 .flecha svg{width:18px;height:18px;stroke:var(--ink);fill:none;stroke-width:2;stroke-linecap:round}
-.flecha.izq{left:max(.5rem,calc((100vw - 76rem) / 2 + .5rem))}.flecha.der{right:max(.5rem,calc((100vw - 76rem) / 2 + .5rem))}
+.flecha.izq{left:-22px}.flecha.der{right:-22px}
 @media (hover:hover) and (min-width:700px){.flecha{display:flex}}
 @media (prefers-reduced-motion:reduce){.car video{transition:none}}
 .cats{display:flex;flex-direction:column;gap:.75rem;padding:.5rem 0 1rem}
@@ -203,7 +203,7 @@ const DET_DEF = [
 ];
 
 const ICONOS = [
-  '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M10 21a5 5 0 0 1-.6-9.960A7 7 0 0 1 23 12.200 4.500 4.500 0 0 1 22.500 21z"/><circle cx="9" cy="25.500" r="1.600"/><circle cx="5.500" cy="28.500" r="1"/></svg>',
+  '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M11 20a4.500 4.500 0 0 1-3.200-7.600 4.200 4.200 0 0 1 4.600-5.200 5 5 0 0 1 8.400-1.200 4.600 4.600 0 0 1 6.200 4.200 4.300 4.300 0 0 1-.600 8.200 4.600 4.600 0 0 1-7 2 4.800 4.800 0 0 1-8.400-.400z"/><circle cx="9.500" cy="25" r="1.900"/><circle cx="5.800" cy="28.800" r="1.200"/></svg>',
   '<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="4" y="9" width="16" height="14" rx="3"/><path d="M20 14l7-4v12l-7-4z"/><circle cx="9" cy="14" r="1.200"/></svg>',
   '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 26l1.500-6L21 6.500a2.100 2.100 0 0 1 3 0l1.500 1.500a2.100 2.100 0 0 1 0 3L12 24.500z"/><path d="M18.500 9l4.500 4.500"/></svg>',
   '<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="9" y="3" width="14" height="26" rx="3.500"/><path d="M14 7h4"/><path d="M13 16l2.500 2.500L19.500 14"/></svg>'
@@ -304,13 +304,16 @@ function reel(list) {
   $("#carDer").onclick = () => { carPausa = Date.now(); paso(1); };
   ["pointerdown", "wheel", "touchstart", "mouseenter"].forEach(ev => r.addEventListener(ev, () => carPausa = Date.now(), { passive: true }));
   clearInterval(carTimer);
-  if (!reduce && list.length > 2) carTimer = setInterval(() => { if (document.hidden || Date.now() - carPausa < 6000 || dlg.open) return; paso(1); }, 3200);
+  if (!reduce && list.length > 4) carTimer = setInterval(() => { if (document.hidden || Date.now() - carPausa < 6000 || dlg.open) return; paso(1); }, 3200);
 }
 
-function elegirReel(shown, filtrado) {
+function elegirReel(shown) {
   const todos = shown.flatMap(c => c.marcas.flatMap(m => m.v));
-  const out = filtrado ? [] : todos.filter(v => v.destacado);
-  // uno por marca primero, después el resto
+  // Si hay videos elegidos para el carrusel en el panel, se muestran solo esos
+  const elegidos = todos.filter(v => v.destacado);
+  if (elegidos.length) return elegidos.slice(0, 24);
+  // Si no hay ninguno elegido: uno por marca primero, después el resto
+  const out = [];
   shown.forEach(c => c.marcas.forEach(m => { const v = m.v.find(x => !out.includes(x)); if (v) out.push(v); }));
   todos.forEach(v => { if (!out.includes(v)) out.push(v); });
   return out.slice(0, 14);
