@@ -618,7 +618,7 @@ function pintarPagina() {
   const sf = $("#swFondo"); sf.replaceChildren();
   Object.entries(FONDOS).forEach(([k, col]) => { const b = el("button"); b.style.background = col; b.style.boxShadow = "0 0 0 1px #D8D0C6"; b.setAttribute("aria-label", k); b.setAttribute("aria-pressed", String((S.fondo || "crema") === k)); b.onclick = () => { S.fondo = k; pintarPagina(); guardar(); }; sf.append(b); });
   document.querySelectorAll("#tPagina [data-k]").forEach(i => { i.value = S[i.dataset.k] || ""; i.oninput = () => { S[i.dataset.k] = i.value; guardar(); }; });
-  $("#pFoto").src = S.foto ? imgSrc(S.foto, 200) : "icon-192.png";
+  $("#pFoto").src = S.foto ? cl(S.foto, "c_fill,g_face,w_320,h_320,q_auto", "jpg") : "icon-192.png";
   const sw = $("#swAcento"); sw.replaceChildren();
   Object.entries(ACENTOS).forEach(([k, col]) => { const b = el("button"); b.style.background = col; b.setAttribute("aria-label", k); b.setAttribute("aria-pressed", String(S.acento === k)); b.onclick = () => { S.acento = k; pintarTodo(); guardar(); }; sw.append(b); });
   $("#verPagina").href = SITIO;

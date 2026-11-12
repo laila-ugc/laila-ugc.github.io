@@ -26,10 +26,16 @@ body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.55 "Manrope"
 .disp{font-family:var(--tit,"Quicksand"),"Manrope",system-ui,sans-serif;font-weight:var(--titw,600);font-variation-settings:"SOFT" 100,"WONK" 0;letter-spacing:var(--tite,-.01em)}
 .wrap{max-width:76rem;margin:0 auto;padding:0 clamp(1.25rem,4vw,3rem)}
 .top{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-top:1.2rem;padding-bottom:1.2rem}
-.me{display:flex;align-items:center;gap:.75rem}
-.me img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--surface);box-shadow:0 0 0 2px var(--lilac)}
-.me b{font-weight:700;font-size:1.05rem;display:block;line-height:1.1}
-.me span{font-size:.85rem;color:var(--soft)}
+.me{display:flex;align-items:center;gap:1rem;min-width:0}
+.fotoBtn{flex:0 0 auto;width:80px;height:80px;padding:0;border:0;border-radius:50%;background:var(--line);cursor:pointer;box-shadow:0 0 0 3px var(--surface),0 0 0 5px var(--lilac)}
+.fotoBtn img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.fotoBtn:focus-visible{outline:3px solid var(--accent);outline-offset:6px}
+@media (min-width:700px){.fotoBtn{width:96px;height:96px}}
+#dFoto .cuadro{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;padding:calc(env(safe-area-inset-top,0px) + 4rem) 1.25rem calc(env(safe-area-inset-bottom,0px) + 1.5rem)}
+#dFoto img{max-width:100%;max-height:calc(100% - 2.5rem);border-radius:20px;object-fit:contain}
+#dFoto p{margin:0;color:#fff;font-weight:600}
+.me b{font-weight:700;font-size:1.25rem;display:block;line-height:1.15}
+.me span{font-size:.95rem;color:var(--soft)}
 .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 1.4rem;border-radius:999px;background:var(--accent);color:var(--onaccent);font-weight:700;text-decoration:none;border:0;font-size:1rem;cursor:pointer;font-family:inherit}
 .btn.soft{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
 .hero{padding:clamp(1rem,4vw,3rem) 0 clamp(1.5rem,4vw,3rem)}
@@ -89,7 +95,7 @@ dialog{border:0;padding:0;background:transparent;max-width:none;max-height:none;
 dialog::backdrop{background:rgba(30,24,40,.88)}
 .stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 4rem) 1rem calc(env(safe-area-inset-bottom,0px) + 1.5rem)}
 .stage video{max-width:100%;max-height:100%;border-radius:18px;background:#000}
-.close{position:fixed;top:calc(env(safe-area-inset-top,0px) + .9rem);right:1rem;font:700 1rem "Manrope",sans-serif;background:#fff;color:#2B2533;border:0;border-radius:999px;min-height:44px;padding:0 1.1rem;cursor:pointer}
+.close{z-index:3;position:fixed;top:calc(env(safe-area-inset-top,0px) + .9rem);right:1rem;font:700 1rem "Manrope",sans-serif;background:#fff;color:#2B2533;border:0;border-radius:999px;min-height:44px;padding:0 1.1rem;cursor:pointer}
 .cap{position:fixed;top:calc(env(safe-area-inset-top,0px) + 1.4rem);left:1rem;right:8rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (prefers-reduced-motion:reduce){.thumb video{transition:none}}
 
@@ -122,7 +128,7 @@ dialog::backdrop{background:rgba(30,24,40,.88)}
 </head>
 <body>
 <div class="wrap top">
-  <div class="me"><img id="foto" alt="" hidden><div><b id="nombre"></b><span id="rol"></span></div></div>
+  <div class="me"><button class="fotoBtn" id="fotoBtn" hidden><img id="foto" alt=""></button><div><b id="nombre"></b><span id="rol"></span></div></div>
   <a class="btn soft" id="topcta" hidden>Escribime</a>
 </div>
 <div class="loading" id="loading">Cargando…</div>
@@ -151,6 +157,10 @@ dialog::backdrop{background:rgba(30,24,40,.88)}
     <div class="links" id="links"></div>
   </div>
 </footer>
+<dialog id="dFoto" aria-label="Foto de perfil">
+  <button class="close" id="cerrarFoto">Cerrar</button>
+  <div class="cuadro" id="cuadroFoto"><img id="fotoGrande" alt=""><p id="fotoPie"></p></div>
+</dialog>
 <dialog id="dlg" aria-label="Video">
   <div class="cap" id="cap"></div>
   <button class="close" id="close">Cerrar</button>
@@ -374,7 +384,14 @@ else {
   document.documentElement.style.setProperty("--accent", ACENTOS[S.acento] || ACENTOS.violeta);
   $("#nombre").textContent = S.nombre || ""; $("#rol").textContent = S.rol || "";
   document.title = (S.nombre || "Portfolio") + " — Videos UGC para marcas";
-  if (S.foto) { const f = $("#foto"); f.src = imgSrc(S.foto, 160); f.alt = S.nombre || ""; f.hidden = false; }
+  if (S.foto) {
+    const f = $("#foto"), fb = $("#fotoBtn"), df = $("#dFoto");
+    f.src = cl(S.foto, "c_fill,g_face,w_320,h_320,q_auto", "jpg"); f.alt = ""; fb.hidden = false;
+    fb.setAttribute("aria-label", "Ver foto de " + (S.nombre || "perfil"));
+    fb.onclick = () => { $("#fotoGrande").src = imgSrc(S.foto, 1200); $("#fotoGrande").alt = S.nombre || ""; $("#fotoPie").textContent = [S.nombre, S.rol].filter(Boolean).join(", "); df.showModal(); };
+    $("#cerrarFoto").onclick = () => df.close();
+    $("#cuadroFoto").onclick = e => { if (e.target.id === "cuadroFoto") df.close(); };
+  }
   $("#frase").textContent = S.frase || "";
   $("#titulo").textContent = S.titulo != null ? S.titulo : "Hola, soy " + (S.nombre || "") + ".\nCreadora de contenido y UGC para marcas";
   const fd = FONDOS[S.fondo] || FONDOS.crema;
