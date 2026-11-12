@@ -178,6 +178,13 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
         <label class="f">Título de portada<textarea data-k="titulo"></textarea></label>
         <div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Pasos: nombre y texto que se despliega<div class="stack" id="pPasos" style="gap:6px"></div></div>
         <label class="f">Título del carrusel de videos<input type="text" data-k="frase"></label>
+        <div class="card" style="padding:14px"><div class="stack" style="gap:10px">
+          <span style="font-size:14px;font-weight:700">Explicación al final de la página</span>
+          <label class="f">Título<input type="text" data-k="explTitulo"></label>
+          <label class="f">Qué es UGC<textarea data-k="explUgc"></textarea></label>
+          <label class="f">Qué es Creación de contenido<textarea data-k="explCont"></textarea></label>
+          <span class="hint">Si dejás los dos textos vacíos, esta parte no se muestra.</span>
+        </div></div>
         <label class="f">Título del cierre<input type="text" data-k="cierreTitulo"></label>
         <label class="f">Texto del cierre<textarea data-k="cierreTexto"></textarea></label>
         <div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Tipografía de los títulos<div class="seg" id="segFuente"></div></div>
@@ -593,6 +600,8 @@ $("#addRubro").onclick = () => {
 const FONDOS = { crema: "#FAEFD9", durazno: "#FCE2D0", rosa: "#FADCE0", arena: "#EFE3CC", lavanda: "#F7F5FB", blanco: "#FFFFFF" };
 const PASOS_DEF = ["Pienso la idea", "La filmo", "La edito", "Lista para publicar"];
 const PASOS_NOM = ["Nube", "Cámara", "Lápiz", "Celular"];
+const EXPL_DEF = { titulo: "¿UGC o creación de contenido?", ugc: "Yo en cámara, contando tu producto como una clienta real. Ideal para generar confianza y para anuncios.", cont: "Tu producto, tu local o tu evento en primer plano. Ideal para mostrar lo que hacés." };
+
 const FUENTES = {
   suave: { nombre: "Suave", fam: "Quicksand", peso: 600, css: "Quicksand:wght@500;600;700", esp: "-.01em" },
   moderna: { nombre: "Moderna", fam: "Outfit", peso: 500, css: "Outfit:wght@400;500;600", esp: "-.015em" },
@@ -618,6 +627,9 @@ const TITF = px => { const f = FUENTES[S && S.fuente] || FUENTES.suave; return f
 function pintarPagina() {
   if (S.titulo == null) S.titulo = "Hola, soy " + (S.nombre || "") + ".\nCreadora de contenido y UGC para marcas";
   if (!Array.isArray(S.pasos)) S.pasos = [...PASOS_DEF];
+  if (S.explTitulo == null) S.explTitulo = EXPL_DEF.titulo;
+  if (S.explUgc == null) S.explUgc = EXPL_DEF.ugc;
+  if (S.explCont == null) S.explCont = EXPL_DEF.cont;
   const pp = $("#pPasos"); pp.replaceChildren();
   if (!Array.isArray(S.pasosDet)) S.pasosDet = [...DET_DEF];
   PASOS_NOM.forEach((n, i) => {
