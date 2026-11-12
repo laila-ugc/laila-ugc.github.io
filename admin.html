@@ -73,7 +73,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .queue .q .nm{flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sw{display:flex;flex-wrap:wrap;gap:8px}
 .sw button{width:44px;height:44px;border-radius:50%;border:2px solid transparent;cursor:pointer;padding:0}
-.sw button[aria-pressed=true]{border-color:var(--ink);box-shadow:inset 0 0 0 3px #fff}
+.sw button[aria-pressed=true]{border-color:var(--ink);box-shadow:inset 0 0 0 3px #fff!important}
 dialog.sheet{border:0;padding:0;width:min(100%,40rem);max-width:100%;max-height:92vh;margin:auto auto 0;border-radius:22px 22px 0 0;background:var(--bg);color:var(--ink)}
 dialog.sheet::backdrop{background:rgba(30,24,40,.5)}
 dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
@@ -132,7 +132,7 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
         <div class="seg" id="fTipo"><button data-v="" aria-pressed="true">Todos</button><button data-v="ugc" aria-pressed="false">UGC</button><button data-v="produccion" aria-pressed="false">Creación de contenido</button><button data-v="sin" aria-pressed="false">Sin tipo</button></div>
         <select id="fMarca" aria-label="Filtrar por marca"></select>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px"><span class="hint" id="fRes"></span><button class="mini" id="selModo">Seleccionar varios</button></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px"><span class="hint" id="fRes"></span><span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="mini" id="buscarRep">Buscar repetidos</button><button class="mini" id="selModo">Seleccionar varios</button></span></div>
       <div class="stack" id="listaVideos" style="margin-top:10px"></div>
       <div id="selBar" hidden style="position:fixed;left:0;right:0;bottom:calc(60px + env(safe-area-inset-bottom,0px));z-index:19;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(0,0,0,.06)">
         <div class="wrap stack" style="padding-top:12px;padding-bottom:12px;gap:8px">
@@ -167,10 +167,12 @@ dialog.sheet .in{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));
         </div>
         <label class="f">Nombre<input type="text" data-k="nombre"></label>
         <label class="f">Debajo del nombre<input type="text" data-k="rol"></label>
-        <label class="f">Frase principal<input type="text" data-k="frase"></label>
-        <label class="f">Presentación<textarea data-k="intro"></textarea></label>
+        <label class="f">Título de portada<textarea data-k="titulo"></textarea></label>
+        <div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Pasos (ícono fijo, texto editable)<div class="stack" id="pPasos" style="gap:6px"></div></div>
+        <label class="f">Título del carrusel de videos<input type="text" data-k="frase"></label>
         <label class="f">Título del cierre<input type="text" data-k="cierreTitulo"></label>
         <label class="f">Texto del cierre<textarea data-k="cierreTexto"></textarea></label>
+        <div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Color de fondo de la página<div class="sw" id="swFondo"></div></div>
         <div class="f" style="display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600">Color de los detalles<div class="sw" id="swAcento"></div></div>
         <a class="btn soft full" id="verPagina" target="_blank" rel="noopener">Ver mi página</a>
       </div>
@@ -297,6 +299,7 @@ function guardar(inmediato) {
 const uid = () => Math.random().toString(36).slice(2, 10);
 const slug = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 30) || "rubro";
 const catDe = id => S.categorias.find(c => c.id === id);
+const contactos = () => linksContacto(S.contacto).filter(c => c.k !== "facebook");
 
 // Huella del contenido: tamaño + primer y último MB. Reconoce el mismo archivo aunque tenga otro nombre.
 async function huellaDe(f) {
@@ -329,6 +332,7 @@ A.onAuthStateChanged(auth, async u => {
     if (snap.exists()) S = { ...structuredClone(INICIAL), ...snap.data() };
     else { S = structuredClone(INICIAL); await F.setDoc(REF, S); }
     S.contacto = { ...INICIAL.contacto, ...(S.contacto || {}) };
+    S.contacto.facebook = ""; if (S.contacto.principal === "facebook") S.contacto.principal = "whatsapp";
     try { const ps = await F.getDoc(REF_PK); PK = ps.exists() ? { ...structuredClone(PK_INICIAL), ...ps.data() } : structuredClone(PK_INICIAL); }
     catch { PK = structuredClone(PK_INICIAL); }
   } catch (e) {
@@ -444,6 +448,22 @@ $("#fTipo").querySelectorAll("button").forEach(b => b.onclick = () => { $("#fTip
 $("#fMarca").onchange = e => { filtroMarca = e.target.value; pintarVideos(); };
 $("#selTipo").querySelectorAll("button").forEach(b => b.onclick = () => { $("#selTipo").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", "false")); b.setAttribute("aria-pressed", "true"); selTipo = b.dataset.v; });
 $("#selModo").onclick = () => { modoSel = !modoSel; sel.clear(); $("#selModo").textContent = modoSel ? "Listo" : "Seleccionar varios"; pintarVideos(); };
+$("#buscarRep").onclick = () => {
+  const norm = t => String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+  const vistos = new Map(), rep = [];
+  S.videos.forEach(v => {
+    const claves = [];
+    if (v.huella) claves.push("h:" + v.huella);
+    if (v.archivo && v.peso) claves.push("a:" + v.archivo + ":" + v.peso);
+    if (norm(v.titulo)) claves.push("t:" + norm(v.titulo) + "|" + norm(v.marca) + "|" + (v.cat || ""));
+    if (claves.some(k => vistos.has(k))) rep.push(v); else claves.forEach(k => vistos.set(k, v));
+  });
+  if (!rep.length) { toast("No encontré videos repetidos"); return; }
+  filtroTipo = ""; filtroMarca = ""; $("#fTipo").querySelectorAll("button").forEach((x, i) => x.setAttribute("aria-pressed", String(i === 0)));
+  modoSel = true; sel.clear(); rep.forEach(v => { sel.add(v.id); abiertos.add(catDe(v.cat) ? v.cat : "__sin"); });
+  $("#selModo").textContent = "Listo"; pintarVideos();
+  toast(rep.length + (rep.length === 1 ? " repetido marcado" : " repetidos marcados") + ". Revisá y tocá “Quitar”.");
+};
 $("#selAplicar").onclick = () => {
   const cat = $("#selCat").value, marca = $("#selMarca").value.trim(), tipo = selTipo;
   if (!cat && !marca && !tipo) { toast("Elegí un rubro, una marca o un tipo"); return; }
@@ -556,7 +576,16 @@ $("#addRubro").onclick = () => {
 };
 
 // ---------- página ----------
+const FONDOS = { crema: "#FAEFD9", durazno: "#FCE2D0", rosa: "#FADCE0", arena: "#EFE3CC", lavanda: "#F7F5FB", blanco: "#FFFFFF" };
+const PASOS_DEF = ["Pienso la idea", "La filmo", "La edito", "Lista para publicar"];
+const PASOS_NOM = ["Nube", "Cámara", "Lápiz", "Celular"];
 function pintarPagina() {
+  if (S.titulo == null) S.titulo = "Hola, soy " + (S.nombre || "") + ".\nCreadora de contenido y UGC para marcas";
+  if (!Array.isArray(S.pasos)) S.pasos = [...PASOS_DEF];
+  const pp = $("#pPasos"); pp.replaceChildren();
+  PASOS_NOM.forEach((n, i) => { const inp = el("input"); inp.type = "text"; inp.value = S.pasos[i] || ""; inp.setAttribute("aria-label", "Texto junto al ícono " + n); inp.placeholder = n + ": " + PASOS_DEF[i]; inp.oninput = () => { S.pasos[i] = inp.value; guardar(); }; pp.append(inp); });
+  const sf = $("#swFondo"); sf.replaceChildren();
+  Object.entries(FONDOS).forEach(([k, col]) => { const b = el("button"); b.style.background = col; b.style.boxShadow = "0 0 0 1px #D8D0C6"; b.setAttribute("aria-label", k); b.setAttribute("aria-pressed", String((S.fondo || "crema") === k)); b.onclick = () => { S.fondo = k; pintarPagina(); guardar(); }; sf.append(b); });
   document.querySelectorAll("#tPagina [data-k]").forEach(i => { i.value = S[i.dataset.k] || ""; i.oninput = () => { S[i.dataset.k] = i.value; guardar(); }; });
   $("#pFoto").src = S.foto ? imgSrc(S.foto, 200) : "icon-192.png";
   const sw = $("#swAcento"); sw.replaceChildren();
@@ -577,7 +606,7 @@ $("#cambiarPw").onclick = async () => {
 $("#salir").onclick = () => A.signOut(auth);
 
 // ---------- contacto ----------
-const CAMPOS = [["whatsapp", "WhatsApp", "tel", "+54 9 11 1234 5678"], ["telefono", "Teléfono", "tel", "+54 9 11 1234 5678"], ["email", "Email", "email", "tu@email.com"], ["instagram", "Instagram", "text", "@usuario"], ["tiktok", "TikTok", "text", "@usuario"], ["facebook", "Facebook", "text", "link de la página"], ["linkedin", "LinkedIn", "text", "link del perfil"], ["youtube", "YouTube", "text", "link del canal"], ["web", "Web", "text", "www.tusitio.com"]];
+const CAMPOS = [["whatsapp", "WhatsApp", "tel", "+54 9 11 1234 5678"], ["telefono", "Teléfono", "tel", "+54 9 11 1234 5678"], ["email", "Email", "email", "tu@email.com"], ["instagram", "Instagram", "text", "@usuario"], ["tiktok", "TikTok", "text", "@usuario"], ["linkedin", "LinkedIn", "text", "link del perfil"], ["youtube", "YouTube", "text", "link del canal"], ["web", "Web", "text", "www.tusitio.com"]];
 function pintarContacto() {
   const C = S.contacto; const box = $("#cCampos"); box.replaceChildren();
   const sel = $("#cPrincipal"); sel.replaceChildren();
@@ -656,7 +685,7 @@ $("#flGenerar").onclick = async () => {
     const acento = ACENTOS[S.acento] || ACENTOS.violeta;
     const cat = $("#flRubro").value;
     const link = SITIO + (cat ? "#" + cat : "");
-    const contacto = linksContacto(S.contacto)[0];
+    const contacto = contactos()[0];
     const imgs = await Promise.all(flSel.map(v => cargarImg(v.portada ? cl(v.portada, "c_fill,w_1080,h_1920,g_auto,q_auto", "jpg") : cl(v.url, "c_limit,w_1080,so_1,q_auto", "jpg"))));
     const frase = $("#flFrase").value.trim() || S.frase || "";
     const pie = (y0, oscuro) => {
@@ -824,7 +853,7 @@ $("#pkGenerar").onclick = async () => {
     x.fillStyle = "#FFFFFF"; redondo(x, M, yp, FW, pieH, 36); x.fill();
     const q = qr(SITIO, 190); x.drawImage(q, M + FW - 30 - 190, yp + 30, 190, 190);
     x.fillStyle = "#2B2533"; x.font = '600 60px "Fraunces"'; x.fillText(S.nombre || "", M + 40, yp + 28, FW - 300);
-    const cs = linksContacto(S.contacto).slice(0, 4);
+    const cs = contactos().slice(0, 4);
     cs.forEach((ct, i) => { x.font = `${i ? 500 : 700} 30px "Manrope"`; x.fillStyle = i ? "#2B2533" : acento; x.fillText(ct.t + ": " + ct.valor, M + 40, yp + 104 + i * 36, FW - 300); });
     if (!cs.length) { x.font = '500 30px "Manrope"'; x.fillStyle = "#6B6375"; x.fillText(S.rol || "", M + 40, yp + 104); }
     mostrarFlyer(c);

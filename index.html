@@ -35,12 +35,12 @@ body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.55 "Manrope"
 .hero{padding:clamp(1rem,4vw,3rem) 0 clamp(1.5rem,4vw,3rem)}
 .hero .in{display:flex;flex-wrap:wrap;align-items:center;gap:1.75rem 3rem}
 .hero .txt{flex:1 1 100%;min-width:0;max-width:44rem}
-.hero h1{margin:0;font-size:clamp(2.2rem,8.5vw,4.8rem);line-height:1.02;max-width:13ch}
+.hero h1{margin:0;font-size:clamp(2rem,6.4vw,3.9rem);line-height:1.05;max-width:20ch}
 .hero p{margin:1.1rem 0 1.6rem;font-size:clamp(1.05rem,2vw,1.2rem);max-width:30rem;color:var(--soft)}
-.car{position:relative;margin-top:clamp(1.5rem,4vw,2.5rem)}
+.car{position:relative;margin-top:1rem}
 .car .track{display:flex;gap:clamp(.6rem,1.5vw,1rem);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:.25rem max(clamp(1.25rem,4vw,3rem),calc((100vw - 76rem) / 2 + 3rem)) .75rem;scroll-padding-inline:max(clamp(1.25rem,4vw,3rem),calc((100vw - 76rem) / 2 + 3rem))}
 .car .track::-webkit-scrollbar{display:none}
-.car .ph{position:relative;flex:0 0 clamp(8.5rem,36vw,10.5rem);aspect-ratio:9/16;border-radius:24px;padding:6px;border:0;cursor:pointer;scroll-snap-align:start;background:var(--butter)}
+.car .ph{box-shadow:0 0 0 2px var(--surface);position:relative;flex:0 0 clamp(8.5rem,36vw,10.5rem);aspect-ratio:9/16;border-radius:24px;padding:6px;border:0;cursor:pointer;scroll-snap-align:start;background:var(--butter)}
 .car .ph:nth-child(5n+2){background:var(--lilac)}.car .ph:nth-child(5n+3){background:var(--mint)}.car .ph:nth-child(5n+4){background:var(--blush)}.car .ph:nth-child(5n+5){background:var(--sky)}
 .car .ph.h{flex-basis:clamp(16rem,64vw,19rem);aspect-ratio:16/9;align-self:center}
 .car .clip{position:absolute;inset:6px;border-radius:18px;overflow:hidden;background:#000}
@@ -105,6 +105,13 @@ dialog::backdrop{background:rgba(30,24,40,.88)}
 .badge{position:absolute;z-index:2;left:.6rem;top:.6rem;font-size:.72rem;font-weight:700;padding:.15rem .55rem;border-radius:999px;background:#E6DCF8;color:#2B2533}
 .badge.produccion{background:#D3F1DE}
 .vacio{color:var(--soft);margin:.5rem 0}
+.hero h1{white-space:pre-line}
+.pasos{list-style:none;margin:1.4rem 0 1.5rem;padding:0;display:flex;flex-direction:column;gap:.7rem}
+.pasos li{display:flex;align-items:center;gap:.7rem;font-weight:600;font-size:1.05rem}
+.pasos .ic{width:3rem;height:3rem;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;box-shadow:0 0 0 3px var(--surface)}
+.pasos svg{width:1.6rem;height:1.6rem;fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+@media (min-width:700px){.pasos{flex-direction:row;flex-wrap:wrap;gap:.75rem 1.75rem}}
+.sub{margin:1.75rem 0 0;font-size:clamp(1.3rem,4vw,2rem);line-height:1.1}
 .loading{padding:30vh 0;text-align:center;color:var(--soft)}
 </style>
 </head>
@@ -117,12 +124,13 @@ dialog::backdrop{background:rgba(30,24,40,.88)}
 <header class="hero" id="hero" hidden>
   <div class="wrap in">
     <div class="txt">
-      <h1 class="disp" id="frase"></h1>
-      <p id="intro"></p>
+      <h1 class="disp" id="titulo"></h1>
+      <ol class="pasos" id="pasos"></ol>
       <div class="redes" id="redes" hidden></div>
       <button class="btn" id="herobtn">Ver videos</button>
     </div>
   </div>
+  <div class="wrap"><h2 class="disp sub" id="frase"></h2></div>
   <div class="car" id="car">
     <button class="flecha izq" id="carIzq" aria-label="Anteriores"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg></button>
     <div class="track" id="reel" aria-label="Videos destacados"></div>
@@ -155,6 +163,15 @@ const canHover = matchMedia("(hover: hover)").matches;
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const dark = false; // la página es siempre clara
 let S = null, CATS = [], TIPO = "";
+const FONDOS = { crema: ["#FAEFD9", "#EBDCC0"], durazno: ["#FCE2D0", "#F0CDB8"], rosa: ["#FADCE0", "#EEC6CC"], arena: ["#EFE3CC", "#DFD0B4"], lavanda: ["#F7F5FB", "#E7E2EF"], blanco: ["#FFFFFF", "#E8E4EC"] };
+const PASOS_DEF = ["Pienso la idea", "La filmo", "La edito", "Lista para publicar"];
+const ICONOS = [
+  '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M10 21a5 5 0 0 1-.6-9.960A7 7 0 0 1 23 12.200 4.500 4.500 0 0 1 22.500 21z"/><circle cx="9" cy="25.500" r="1.600"/><circle cx="5.500" cy="28.500" r="1"/></svg>',
+  '<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="4" y="9" width="16" height="14" rx="3"/><path d="M20 14l7-4v12l-7-4z"/><circle cx="9" cy="14" r="1.200"/></svg>',
+  '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 26l1.500-6L21 6.500a2.100 2.100 0 0 1 3 0l1.500 1.500a2.100 2.100 0 0 1 0 3L12 24.500z"/><path d="M18.500 9l4.500 4.500"/></svg>',
+  '<svg viewBox="0 0 32 32" aria-hidden="true"><rect x="9" y="3" width="14" height="26" rx="3.500"/><path d="M14 7h4"/><path d="M13 16l2.500 2.500L19.500 14"/></svg>'
+];
+const TONO_PASO = ["var(--butter)", "var(--mint)", "var(--blush)", "var(--sky)"];
 
 function armar(data) {
   return (data.categorias || []).map(c => {
@@ -283,7 +300,6 @@ function render(mantenerScroll) {
   if (!CATS.length) { main.append(el("p", "loading", "Portfolio en preparación.")); $("#hero").hidden = true; return; }
   $("#hero").hidden = false;
   reel(elegirReel(shown, !!only));
-  $("#intro").textContent = S.intro || "";
   const box = el("div", "cats"); box.id = "cats";
   shown.forEach(c => box.append(seccion(c, !!only)));
   main.append(box);
@@ -292,7 +308,7 @@ function render(mantenerScroll) {
 
 function contacto() {
   const L = $("#links"); L.replaceChildren();
-  const lista = linksContacto(S.contacto || {});
+  const lista = linksContacto(S.contacto || {}).filter(c => c.k !== "facebook");
   lista.forEach((c, i) => {
     const a = el("a", i ? "sec" : null, i === 0 && c.k === "whatsapp" ? "Escribir por WhatsApp" : c.t);
     a.href = c.href; if (!/^(tel|mailto):/.test(c.href)) { a.target = "_blank"; a.rel = "noopener"; }
@@ -300,7 +316,7 @@ function contacto() {
   });
   $("#foot").hidden = !lista.length;
   const R = $("#redes"); R.replaceChildren();
-  lista.filter(c => ["instagram", "tiktok", "facebook", "linkedin", "youtube", "web"].includes(c.k)).forEach(c => {
+  lista.filter(c => ["instagram", "tiktok", "linkedin", "youtube", "web"].includes(c.k)).forEach(c => {
     const a = el("a", null, c.k === "web" ? "Web" : c.t); a.href = c.href; a.target = "_blank"; a.rel = "noopener"; R.append(a);
   });
   R.hidden = !R.children.length;
@@ -333,6 +349,13 @@ else {
   document.title = (S.nombre || "Portfolio") + " — Videos UGC para marcas";
   if (S.foto) { const f = $("#foto"); f.src = imgSrc(S.foto, 160); f.alt = S.nombre || ""; f.hidden = false; }
   $("#frase").textContent = S.frase || "";
+  $("#titulo").textContent = S.titulo != null ? S.titulo : "Hola, soy " + (S.nombre || "") + ".\nCreadora de contenido y UGC para marcas";
+  const fd = FONDOS[S.fondo] || FONDOS.crema;
+  document.documentElement.style.setProperty("--bg", fd[0]); document.documentElement.style.setProperty("--line", fd[1]);
+  const mt = document.querySelector('meta[name="theme-color"]'); if (mt) mt.content = fd[0];
+  const P = $("#pasos"); P.replaceChildren();
+  (Array.isArray(S.pasos) ? S.pasos : PASOS_DEF).forEach((t, i) => { if (!String(t || "").trim() || i > 3) return; const li = el("li"); const ic = el("span", "ic"); ic.style.background = TONO_PASO[i]; ic.innerHTML = ICONOS[i]; li.append(ic, el("span", null, t)); P.append(li); });
+  P.hidden = !P.children.length;
   $("#cierreTitulo").textContent = S.cierreTitulo || ""; $("#cierreTexto").textContent = S.cierreTexto || "";
   CATS = armar(S);
   filtroGeneral(); render(); contacto();
