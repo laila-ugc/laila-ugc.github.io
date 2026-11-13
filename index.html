@@ -51,7 +51,8 @@ body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.55 "Manrope"
 .car .ph.h{flex-basis:calc((100% - 3 * var(--g) - 4px) / 2 + var(--g));aspect-ratio:16/9}
 .car .clip{position:absolute;inset:clamp(3px,.6vw,6px);border-radius:clamp(9px,1.8vw,19px);overflow:hidden;background:#000}
 .car video,.car img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.car video{opacity:0;transition:opacity .4s}.car .ph.live video{opacity:1}
+.car .ph .play{left:50%;top:50%;bottom:auto;width:clamp(1.9rem,5.5vw,3.4rem);height:clamp(1.9rem,5.5vw,3.4rem);transform:translate(-50%,-50%);box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.car .ph .play svg{width:34%;height:34%}
 .car .ph .t{position:absolute;left:clamp(6px,1.2vw,12px);right:clamp(6px,1.2vw,12px);bottom:clamp(6px,1.2vw,12px);z-index:2;color:#fff;font-size:clamp(.55rem,1.6vw,.8rem);font-weight:700;text-shadow:0 1px 6px rgba(0,0,0,.6);text-align:left;line-height:1.2}
 .car .ph:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .flecha{position:absolute;top:50%;z-index:3;width:48px;height:48px;margin-top:-30px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.08)}
@@ -244,14 +245,6 @@ function tile(v) {
   const p = el("span", "play"); p.innerHTML = playIcon;
   th.append(img, p);
   if (v.tipo === "ugc" || v.tipo === "produccion") th.append(el("span", "badge " + v.tipo, v.tipo === "ugc" ? "UGC" : "Creación de contenido"));
-  if (canHover && !reduce) {
-    let pv = null;
-    b.addEventListener("mouseenter", () => {
-      if (!pv) { pv = el("video"); pv.muted = true; pv.loop = true; pv.playsInline = true; pv.preload = "auto"; pv.src = videoSrc(v); th.insertBefore(pv, p); }
-      pv.play().then(() => b.classList.add("live")).catch(() => {});
-    });
-    b.addEventListener("mouseleave", () => { if (pv) { pv.pause(); b.classList.remove("live"); } });
-  }
   b.append(th, el("p", null, v.titulo || ""));
   b.onclick = () => abrir(v);
   return b;
@@ -293,26 +286,18 @@ function seccion(c, abierto) {
   return d;
 }
 
-// Vista previa liviana para el carrusel: 360 px, sin audio, primeros 8 segundos
-const previa = v => cl(v.url, "c_limit,w_360,q_auto:low,ac_none,eo_8", "mp4");
-let carTimer = null, carPausa = 0, carObs = null;
+let carTimer = null, carPausa = 0;
 function reel(list) {
   const r = $("#reel"); r.replaceChildren();
-  if (carObs) carObs.disconnect();
-  carObs = "IntersectionObserver" in window ? new IntersectionObserver(es => es.forEach(e => {
-    const ph = e.target, vid = ph.querySelector("video");
-    if (e.isIntersecting && e.intersectionRatio > 0.6) {
-      if (!vid && !reduce) { const v = el("video"); v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute("muted", ""); v.setAttribute("playsinline", ""); v.preload = "auto"; v.src = ph.dataset.src; v.addEventListener("playing", () => ph.classList.add("live")); ph.querySelector(".clip").append(v); v.play().catch(() => {}); }
-      else if (vid) vid.play().catch(() => {});
-    } else if (vid) vid.pause();
-  }), { threshold: [0, 0.6, 1] }) : null;
+  // Los videos no se reproducen solos: se muestra la portada con un botón de play y el video se carga recién al tocarlo
   list.forEach(v => {
-    const ph = el("button", "ph" + (v.h ? " h" : "")); ph.dataset.src = previa(v);
-    ph.setAttribute("aria-label", "Ver video: " + (v.titulo || v.marca || ""));
+    const ph = el("button", "ph" + (v.h ? " h" : ""));
+    ph.setAttribute("aria-label", "Reproducir video: " + (v.titulo || v.marca || ""));
     const clip = el("div", "clip"); const img = el("img"); img.src = posterSrc(v); img.alt = ""; img.loading = "lazy"; clip.append(img); ph.append(clip);
+    const pl = el("span", "play"); pl.innerHTML = playIcon; ph.append(pl);
     if (v.marca) ph.append(el("span", "t", v.marca));
     ph.onclick = () => abrir(v);
-    r.append(ph); if (carObs) carObs.observe(ph);
+    r.append(ph);
   });
   const paso = dir => { const it = r.querySelector(".ph"); if (!it) return; const w = it.getBoundingClientRect().width + parseFloat(getComputedStyle(r).columnGap || 12);
     const fin = r.scrollLeft + r.clientWidth >= r.scrollWidth - 4;
